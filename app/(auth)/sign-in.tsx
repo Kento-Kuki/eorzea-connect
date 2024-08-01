@@ -1,10 +1,12 @@
-import { View, Text, ScrollView, Image } from 'react-native';
+import { View, Text, ScrollView, Image, Alert } from 'react-native';
 import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import BackgroundLayout from '@/components/BackgroundLayout';
 import FormField from '@/components/FormField';
 import CustomButton from '@/components/CustomButton';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
+import { signIn } from '@/lib/appwrite';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 const SignIn = () => {
   const [form, setForm] = useState({
@@ -14,11 +16,33 @@ const SignIn = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const onSubmit = () => {};
+  const onSubmit = async () => {
+    if (form.email === '' || form.password === '') {
+      Alert.alert('Error', 'Please fill in all fields');
+    }
+    setIsSubmitting(true);
+    try {
+      await signIn(form.email, form.password);
+
+      // set it to global state
+
+      router.replace('/home');
+    } catch (error) {
+      console.log(error);
+      Alert.alert('Error', 'Failed to sign in');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
   return (
     <BackgroundLayout>
-      <SafeAreaView className=''>
-        <ScrollView>
+      <SafeAreaView className='flex-1'>
+        <KeyboardAwareScrollView
+          contentContainerStyle={{
+            flexGrow: 1,
+          }}
+          keyboardShouldPersistTaps='handled'
+        >
           <View className='w-full justify-center min-h-[70vh] px-4 my-6'>
             <Image
               source={require('../../assets/images/logo_transparent1.png')}
@@ -61,7 +85,7 @@ const SignIn = () => {
               </Link>
             </View>
           </View>
-        </ScrollView>
+        </KeyboardAwareScrollView>
       </SafeAreaView>
     </BackgroundLayout>
   );

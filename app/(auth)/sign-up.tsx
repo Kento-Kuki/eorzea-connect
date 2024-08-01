@@ -1,10 +1,20 @@
-import { View, Text, ScrollView, Image } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  Image,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import BackgroundLayout from '@/components/BackgroundLayout';
 import FormField from '@/components/FormField';
 import CustomButton from '@/components/CustomButton';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
+import { createUser } from '@/lib/appwrite';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 const SignUp = () => {
   const [form, setForm] = useState({
@@ -15,11 +25,33 @@ const SignUp = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const onSubmit = () => {};
+  const onSubmit = async () => {
+    if (form.username === '' || form.email === '' || form.password === '') {
+      Alert.alert('Error', 'Please fill in all fields');
+    }
+    setIsSubmitting(true);
+
+    try {
+      const result = await createUser(form.email, form.password, form.username);
+
+      // set it to global state
+
+      router.replace('/home');
+    } catch (error) {
+      Alert.alert('Error', 'Failed to create account');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
   return (
     <BackgroundLayout>
-      <SafeAreaView className=''>
-        <ScrollView>
+      <SafeAreaView className='flex-1'>
+        <KeyboardAwareScrollView
+          contentContainerStyle={{
+            flexGrow: 1,
+          }}
+          keyboardShouldPersistTaps='handled'
+        >
           <View className='w-full justify-center min-h-[70vh] px-4 my-6'>
             <Image
               source={require('../../assets/images/logo_transparent1.png')}
@@ -69,7 +101,7 @@ const SignUp = () => {
               </Link>
             </View>
           </View>
-        </ScrollView>
+        </KeyboardAwareScrollView>
       </SafeAreaView>
     </BackgroundLayout>
   );
