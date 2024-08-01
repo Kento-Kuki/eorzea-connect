@@ -1,23 +1,20 @@
-import {
-  View,
-  Text,
-  ScrollView,
-  Image,
-  ImageBackground,
-  Touchable,
-} from 'react-native';
-import React from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import CustomButton from '@/components/CustomButton';
+import { Redirect, router } from 'expo-router';
+import 'react-native-url-polyfill/auto';
 import { StatusBar } from 'expo-status-bar';
-import { router } from 'expo-router';
+import { View, Text, ScrollView, Image } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import CustomButton from '@/components/CustomButton';
+import BackgroundLayout from '@/components/BackgroundLayout';
+import { useGlobalContext } from '@/context/GlobalProvider';
 
 const Welcome = () => {
+  const { isLoading, isLoggedIn } = useGlobalContext();
+
+  if (!isLoading && isLoggedIn) return <Redirect href='/home' />;
+
   return (
-    <ImageBackground
-      source={require('../assets/images/ff14BG.jpg')}
-      style={{ flex: 1 }}
-    >
+    <BackgroundLayout>
       <SafeAreaView className='h-full' style={{ flex: 1 }}>
         <ScrollView
           contentContainerStyle={{
@@ -26,10 +23,15 @@ const Welcome = () => {
         >
           <View className='w-full justify-center items-center min-h-[85vh] px-8'>
             <Image
-              source={require('../assets/images/logo.png')}
-              className='w-[130px] h-[84px]'
+              source={require('../assets/images/logo_transparent1.png')}
+              className='w-full h-[70px]'
               resizeMode='contain'
             />
+            {/* <Image
+              source={require('../assets/images/logo_transparent2.png')}
+              className='w-full'
+              resizeMode='contain'
+            /> */}
             <Image
               source={require('../assets/images/ff14PR.png')}
               className='max-w-[380px] w-full h-[180px]'
@@ -56,7 +58,7 @@ const Welcome = () => {
         </ScrollView>
         <StatusBar style='light' backgroundColor='#161622' />
       </SafeAreaView>
-    </ImageBackground>
+    </BackgroundLayout>
   );
 };
 
