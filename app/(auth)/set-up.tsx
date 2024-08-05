@@ -15,7 +15,7 @@ import { updateUser } from '@/lib/appwrite';
 import { router } from 'expo-router';
 
 const SetUp = () => {
-  const { user } = useGlobalContext();
+  const { user, setUser } = useGlobalContext();
   const { control, handleSubmit, setValue, getValues, watch } =
     useForm<IUserForm>({
       defaultValues: {
@@ -53,8 +53,9 @@ const SetUp = () => {
       if (!user) return;
       const updatedData = { ...data, isSetupComplete: true };
       await updateUser(user.id, updatedData);
+      setUser({ ...user, ...updatedData });
       Alert.alert('Success', 'Account setup complete!');
-      router.replace('/home');
+      router.push('/home');
     } catch (error) {
       Alert.alert('Error', 'Failed to set up account');
     }

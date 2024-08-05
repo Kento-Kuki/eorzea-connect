@@ -26,7 +26,7 @@ const INFO = [
 
 const Info = () => {
   return (
-    <View className='mt-10 space-y-5'>
+    <View className='space-y-5 mb-2'>
       <Text className='text-white font-psemibold text-4xl text-center'>
         Info
       </Text>
