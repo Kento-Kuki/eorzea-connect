@@ -1,7 +1,7 @@
 import { useGlobalContext } from '@/context/GlobalProvider';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Redirect, Tabs } from 'expo-router';
-import React from 'react';
+import { Redirect, router, Tabs } from 'expo-router';
+import React, { useEffect } from 'react';
 import { Text, View } from 'react-native';
 
 interface TabIconProps {
@@ -12,11 +12,6 @@ interface TabIconProps {
 }
 
 const TabIcon = ({ icon, color, name, focused }: TabIconProps) => {
-  const { isLoading, isLoggedIn, user } = useGlobalContext();
-
-  if (!user?.isSetupComplete) return <Redirect href='/set-up' />;
-
-  if (!isLoading && !isLoggedIn) return <Redirect href='/sign-in' />;
   return (
     <View className='flex items-center justify-center gap-1'>
       {icon}
@@ -31,6 +26,12 @@ const TabIcon = ({ icon, color, name, focused }: TabIconProps) => {
 };
 
 const TabsLayout = () => {
+  const { isLoading, isLoggedIn, user } = useGlobalContext();
+
+  if (user && user.isSetupComplete === false)
+    return <Redirect href='/set-up' />;
+
+  if (!isLoading && !isLoggedIn) return <Redirect href='/sign-in' />;
   return (
     <Tabs
       screenOptions={{

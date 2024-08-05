@@ -39,9 +39,8 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
     getCurrentUser()
       .then((res) => {
         if (res) {
-          const { accountId, username, email, avatar, isSetupComplete } = res;
           setIsLoggedIn(true);
-          setUser({ accountId, username, email, avatar, isSetupComplete });
+          setUser(res);
         } else {
           setIsLoggedIn(false);
           setUser(null);

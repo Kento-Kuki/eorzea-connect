@@ -1,3 +1,4 @@
+import { Post } from '@/types/Post';
 import { IUserForm, User } from '@/types/User';
 import {
   Account,
@@ -77,6 +78,14 @@ export const signIn = async (email: string, password: string) => {
     throw new Error(error as string);
   }
 };
+export const signOut = async () => {
+  try {
+    const session = await account.deleteSession('current');
+    return session;
+  } catch (error) {
+    throw new Error(error as string);
+  }
+};
 
 export const getCurrentUser = async () => {
   try {
@@ -100,6 +109,14 @@ export const getCurrentUser = async () => {
       email: userDoc.email,
       avatar: userDoc.avatar,
       isSetupComplete: userDoc.isSetupComplete,
+      age: userDoc.age,
+      gender: userDoc.gender,
+      race: userDoc.race,
+      job: userDoc.job,
+      activeTime: userDoc.activeTime,
+      playStyle: userDoc.playStyle,
+      server: userDoc.server,
+      dataCenter: userDoc.dataCenter,
     };
 
     return user;
@@ -108,11 +125,34 @@ export const getCurrentUser = async () => {
   }
 };
 
-export const signOut = async () => {
+export const getUser = async (userId: string) => {
   try {
-    const session = await account.deleteSession('current');
-    return session;
+    const response = await databases.listDocuments(
+      config.databaseId,
+      config.userCollectionId,
+      [Query.equal('$id', userId)]
+    );
+    const userDoc = response.documents[0];
+    const user = {
+      id: userDoc.$id,
+      accountId: userDoc.accountId,
+      username: userDoc.username,
+      email: userDoc.email,
+      avatar: userDoc.avatar,
+      isSetupComplete: userDoc.isSetupComplete,
+      age: userDoc.age,
+      gender: userDoc.gender,
+      race: userDoc.race,
+      job: userDoc.job,
+      activeTime: userDoc.activeTime,
+      playStyle: userDoc.playStyle,
+      server: userDoc.server,
+      dataCenter: userDoc.dataCenter,
+    };
+
+    return user;
   } catch (error) {
+    console.log(error);
     throw new Error(error as string);
   }
 };
@@ -131,6 +171,42 @@ export const updateUser = async (
     return updatedUser;
   } catch (error) {
     console.error(error);
+    throw new Error(error as string);
+  }
+};
+
+export const getAllPosts = async () => {
+  try {
+    const response = await databases.listDocuments(
+      config.databaseId,
+      config.postsCollectionId
+    );
+    const posts: Post[] = response.documents.map((post) => ({
+      id: post.$id,
+      title: post.title,
+      content: post.content,
+      author: {
+        id: post.users.$id,
+        username: post.users.username,
+        avatar: post.users.avatar,
+        accountId: post.users.accountId,
+        isSetupComplete: post.users.isSetupComplete,
+        age: post.users.age,
+        gender: post.users.gender,
+        race: post.users.race,
+        job: post.users.job,
+        activeTime: post.users.activeTime,
+        playStyle: post.users.playStyle,
+        server: post.users.server,
+        dataCenter: post.users.dataCenter,
+      } as User,
+      createdAt: post.$createdAt,
+      updatedAt: post.$updatedAt,
+    }));
+
+    return posts;
+  } catch (error) {
+    console.log(error);
     throw new Error(error as string);
   }
 };
