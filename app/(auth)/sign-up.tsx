@@ -15,6 +15,7 @@ import CustomButton from '@/components/CustomButton';
 import { Link, router } from 'expo-router';
 import { createUser } from '@/lib/appwrite';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { useGlobalContext } from '@/context/GlobalProvider';
 
 const SignUp = () => {
   const [form, setForm] = useState({
@@ -24,6 +25,7 @@ const SignUp = () => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { setUser, setIsLoggedIn } = useGlobalContext();
 
   const onSubmit = async () => {
     if (form.username === '' || form.email === '' || form.password === '') {
@@ -33,10 +35,12 @@ const SignUp = () => {
 
     try {
       const result = await createUser(form.email, form.password, form.username);
+      const { username, email, accountId, avatar, isSetupComplete, $id } =
+        result;
+      setUser({ username, email, accountId, avatar, isSetupComplete, id: $id });
+      setIsLoggedIn(true);
 
-      // set it to global state
-
-      router.replace('/home');
+      router.replace('/set-up');
     } catch (error) {
       Alert.alert('Error', 'Failed to create account');
     } finally {

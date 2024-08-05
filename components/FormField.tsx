@@ -6,6 +6,9 @@ interface FormFieldProps {
   value: string;
   handleChangeText: (e: string) => void;
   otherStyles?: string;
+  labelStyles?: string;
+  inputStyles?: string;
+  inputTextStyles?: string;
   keyboardType?: string;
   placeholder?: string;
 }
@@ -15,16 +18,23 @@ const FormField = ({
   value,
   handleChangeText,
   otherStyles,
+  labelStyles,
+  inputTextStyles,
+  inputStyles,
   keyboardType,
   placeholder,
 }: FormFieldProps) => {
   const [showPassword, setShowPassword] = useState(false);
   return (
     <View className={`space-y-2 ${otherStyles}`}>
-      <Text className='text-base text-gray-100 font-pmedium'>{title}</Text>
-      <View className='w-full h-16 px-4 rounded-2xl bg-gray-800 border-2 border-gray-800 focus:border-primary flex-row items-center'>
+      <Text className={`text-base text-gray-100 font-pmedium ${labelStyles}`}>
+        {title}
+      </Text>
+      <View
+        className={`w-full h-16 px-4 rounded-2xl bg-gray-800 border-2 border-gray-800 focus:border-primary flex-row items-center ${inputStyles}`}
+      >
         <TextInput
-          className='flex-1 text-white font-psemibold text-base'
+          className={`flex-1 text-white font-psemibold text-base ${inputTextStyles}`}
           value={value}
           placeholder={placeholder}
           placeholderTextColor='#9E9E9E'

@@ -1,11 +1,24 @@
-import { View, Text } from 'react-native';
+import { View, Text, FlatList } from 'react-native';
 import React from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import BackgroundLayout from '@/components/BackgroundLayout';
+import Info from '@/components/Info';
+import { Link } from 'expo-router';
 
 const Home = () => {
   return (
-    <View className='flex-1 items-center justify-center'>
-      <Text className='text-3xl text-blue-500'>Home</Text>
-    </View>
+    <BackgroundLayout>
+      <SafeAreaView className='h-full mx-4'>
+        <Info />
+        <FlatList
+          data={[{ $id: '1' }, { $id: '2' }, { $id: '3' }]}
+          keyExtractor={(item) => item.$id}
+          renderItem={({ item }) => (
+            <Text className='text-white'>{item.$id}</Text>
+          )}
+        />
+      </SafeAreaView>
+    </BackgroundLayout>
   );
 };
 

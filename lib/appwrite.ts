@@ -1,3 +1,4 @@
+import { IUserForm, User } from '@/types/User';
 import {
   Account,
   Avatars,
@@ -46,6 +47,8 @@ export const createUser = async (
 
     const avatarUrl = avatars.getInitials(username);
 
+    await signIn(email, password);
+
     const newUser = await databases.createDocument(
       config.databaseId,
       config.userCollectionId,
@@ -55,6 +58,7 @@ export const createUser = async (
         username,
         email,
         avatar: avatarUrl,
+        isSetupComplete: false,
       }
     );
 
@@ -85,9 +89,48 @@ export const getCurrentUser = async () => {
       config.userCollectionId,
       [Query.equal('accountId', currentAccount.$id)]
     );
+    if (currentUserDoc.documents.length === 0)
+      throw new Error('No user document found');
 
-    return currentUserDoc.documents[0];
+    const userDoc = currentUserDoc.documents[0];
+    const user: User = {
+      id: userDoc.$id,
+      accountId: userDoc.accountId,
+      username: userDoc.username,
+      email: userDoc.email,
+      avatar: userDoc.avatar,
+      isSetupComplete: userDoc.isSetupComplete,
+    };
+
+    return user;
   } catch (error) {
     console.log(error);
+  }
+};
+
+export const signOut = async () => {
+  try {
+    const session = await account.deleteSession('current');
+    return session;
+  } catch (error) {
+    throw new Error(error as string);
+  }
+};
+
+export const updateUser = async (
+  userId: string,
+  userData: Partial<IUserForm>
+) => {
+  try {
+    const updatedUser = await databases.updateDocument(
+      config.databaseId,
+      config.userCollectionId,
+      userId,
+      userData
+    );
+    return updatedUser;
+  } catch (error) {
+    console.error(error);
+    throw new Error(error as string);
   }
 };
