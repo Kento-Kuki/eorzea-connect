@@ -16,6 +16,8 @@ import { getAllPosts } from '@/lib/appwrite';
 import useAppwrite from '@/lib/useAppwrite';
 import { Post } from '@/types/Post';
 import PostCard from '@/components/PostCard';
+import CustomButton from '@/components/CustomButton';
+import { FontAwesome } from '@expo/vector-icons';
 
 const Home = () => {
   const { user } = useGlobalContext();
@@ -31,7 +33,7 @@ const Home = () => {
   return (
     <BackgroundLayout>
       <SafeAreaView
-        className='h-full mx-4 flex-1'
+        className='h-full mx-4 flex-1 relative'
         edges={['top', 'left', 'right']}
       >
         <FlatList
@@ -77,6 +79,9 @@ const Home = () => {
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
         />
+        <CustomButton containerStyles='absolute bottom-2 right-2 w-14 h-14 rounded-full '>
+          <FontAwesome name='plus' size={24} color='white' />
+        </CustomButton>
       </SafeAreaView>
     </BackgroundLayout>
   );

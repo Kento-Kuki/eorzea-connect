@@ -28,6 +28,17 @@ export interface IUserForm {
   activeTime: string[];
 }
 
+export type ISearch = {
+  age: string;
+  gender: string;
+  race: string;
+  job: string;
+  dataCenter: string;
+  server: string;
+  playStyle: string[];
+  activeTime: string[];
+};
+
 export interface SelectType {
   label: string;
   value: string;

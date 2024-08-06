@@ -18,7 +18,10 @@ const AuthorInfo = ({ author }: AuthorInfoProps) => {
         <View className='flex justify-center items-center'>
           <Text className='font-psemibold text-lg'>{author.username}</Text>
           <Text className='font-pmedium'>Age:{author.age}</Text>
-          <Text className='font-pmedium'>Gender:{author.gender}</Text>
+          <Text className='font-pmedium'>
+            Gender:
+            {author.gender === 'Prefer not to say' ? '?' : author.gender}
+          </Text>
         </View>
       </View>
 
@@ -33,7 +36,10 @@ const AuthorInfo = ({ author }: AuthorInfoProps) => {
           <Text className='font-pmedium'>Play Style:</Text>
           <View className='flex flex-row flex-wrap'>
             {author.playStyle?.map((item, index) => (
-              <View key={index} className='bg-primary p-1 m-1 rounded-lg '>
+              <View
+                key={index}
+                className='bg-primary py-0.5 px-1.5 m-1 rounded-lg '
+              >
                 <Text className='text-white font-pmedium'>{item}</Text>
               </View>
             ))}
