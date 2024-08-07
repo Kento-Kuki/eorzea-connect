@@ -1,5 +1,5 @@
 import { Post } from '@/types/Post';
-import { IUserForm, User } from '@/types/User';
+import { ISearch, IUserForm, User } from '@/types/User';
 import {
   Account,
   Avatars,
@@ -205,6 +205,84 @@ export const getAllPosts = async () => {
     }));
 
     return posts;
+  } catch (error) {
+    console.log(error);
+    throw new Error(error as string);
+  }
+};
+
+export const searchPosts = async (query: string) => {
+  try {
+    const searchParams: ISearch = JSON.parse(decodeURIComponent(query));
+
+    const filters: string[] = [];
+    if (searchParams.age) {
+      filters.push(Query.equal('age', searchParams.age));
+    }
+    if (searchParams.gender) {
+      filters.push(Query.equal('gender', searchParams.gender));
+    }
+    if (searchParams.race) {
+      filters.push(Query.equal('race', searchParams.race));
+    }
+    if (searchParams.job) {
+      filters.push(Query.equal('job', searchParams.job));
+    }
+    if (searchParams.server) {
+      filters.push(Query.equal('server', searchParams.server));
+    }
+    if (searchParams.dataCenter) {
+      filters.push(Query.equal('dataCenter', searchParams.dataCenter));
+    }
+    if (searchParams.playStyle && searchParams.playStyle.length > 0) {
+      filters.push(Query.contains('playStyle', searchParams.playStyle));
+    }
+    if (searchParams.activeTime && searchParams.activeTime.length > 0) {
+      filters.push(Query.contains('activeTime', searchParams.activeTime));
+    }
+
+    const users = await databases.listDocuments(
+      config.databaseId,
+      config.userCollectionId,
+      filters
+    );
+
+    const userIds = users.documents.map((user) => user.$id);
+
+    const postsPromises = userIds.map((id) =>
+      databases.listDocuments(config.databaseId, config.postsCollectionId, [
+        Query.equal('users', id),
+      ])
+    );
+
+    const postsResults = await Promise.all(postsPromises);
+
+    const allPosts = postsResults.flatMap((result) => result.documents);
+
+    const formattedPosts = allPosts.map((post) => ({
+      id: post.$id,
+      title: post.title,
+      content: post.content,
+      author: {
+        id: post.users.$id,
+        username: post.users.username,
+        avatar: post.users.avatar,
+        accountId: post.users.accountId,
+        isSetupComplete: post.users.isSetupComplete,
+        age: post.users.age,
+        gender: post.users.gender,
+        race: post.users.race,
+        job: post.users.job,
+        activeTime: post.users.activeTime,
+        playStyle: post.users.playStyle,
+        server: post.users.server,
+        dataCenter: post.users.dataCenter,
+      } as User,
+      createdAt: post.$createdAt,
+      updatedAt: post.$updatedAt,
+    }));
+
+    return formattedPosts;
   } catch (error) {
     console.log(error);
     throw new Error(error as string);

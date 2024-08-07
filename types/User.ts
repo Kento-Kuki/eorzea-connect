@@ -29,14 +29,14 @@ export interface IUserForm {
 }
 
 export type ISearch = {
-  age: string;
-  gender: string;
-  race: string;
-  job: string;
-  dataCenter: string;
-  server: string;
-  playStyle: string[];
-  activeTime: string[];
+  age: string | null;
+  gender: string | null;
+  race: string | null;
+  job: string | null;
+  dataCenter: string | null;
+  server: string | null;
+  playStyle: string[] | null;
+  activeTime: string[] | null;
 };
 
 export interface SelectType {

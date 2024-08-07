@@ -4,7 +4,7 @@ import { Dropdown } from 'react-native-element-dropdown';
 
 interface SelectProps {
   title: string;
-  value: string;
+  value: string | null;
   data: { label: string; value: string }[];
   placeholder?: string;
   position?: 'top' | 'bottom';
