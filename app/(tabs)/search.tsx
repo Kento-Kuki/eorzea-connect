@@ -10,19 +10,20 @@ import CheckBox from '@/components/CheckBox';
 import { checkboxOptions } from '@/constants/checkbox';
 import CustomButton from '@/components/CustomButton';
 import Separator from '@/components/Separator';
+import { router } from 'expo-router';
 
 const Search = () => {
   const { control, handleSubmit, setValue, getValues, watch } =
     useForm<ISearch>({
       defaultValues: {
-        age: '',
-        gender: '',
-        race: '',
-        job: '',
-        server: '',
-        dataCenter: '',
-        playStyle: [],
-        activeTime: [],
+        age: null,
+        gender: null,
+        race: null,
+        job: null,
+        server: null,
+        dataCenter: null,
+        playStyle: null,
+        activeTime: null,
       },
     });
 
@@ -42,12 +43,18 @@ const Search = () => {
     }
   }, [selectedDc]);
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: ISearch) => {
+    const query = encodeURIComponent(JSON.stringify(data));
     console.log(data);
+    router.push(`/result/${query}` as any);
   };
+
   return (
     <BackgroundLayout>
-      <SafeAreaView className='h-full mx-4'>
+      <SafeAreaView
+        className='h-full mx-4 mb-4 flex-1'
+        edges={['top', 'left', 'right']}
+      >
         <ScrollView className='bg-secondary rounded-2xl my-4'>
           <View className='flex justify-center items-center space-y-4 w-full px-6 py-10'>
             <Text className='font-pbold text-2xl text-center'>
@@ -60,7 +67,7 @@ const Search = () => {
                 name='age'
                 render={({ field: { onChange, value } }) => (
                   <Select
-                    data={selectData.age}
+                    data={[{ label: 'None', value: '' }, ...selectData.age]}
                     title='Age'
                     titleStyle='font-psemibold text-lg'
                     value={value}
@@ -75,7 +82,7 @@ const Search = () => {
                 name='gender'
                 render={({ field: { onChange, value } }) => (
                   <Select
-                    data={selectData.gender}
+                    data={[{ label: 'None', value: '' }, ...selectData.gender]}
                     title='Gender'
                     titleStyle='font-psemibold text-lg'
                     value={value}
@@ -108,7 +115,7 @@ const Search = () => {
                 name='dataCenter'
                 render={({ field: { onChange, value } }) => (
                   <Select
-                    data={dcOptions}
+                    data={[{ label: 'None', value: '' }, ...dcOptions]}
                     title='DC'
                     titleStyle='font-psemibold text-lg'
                     value={value}
@@ -127,7 +134,7 @@ const Search = () => {
                 name='server'
                 render={({ field: { onChange, value } }) => (
                   <Select
-                    data={serverOptions}
+                    data={[{ label: 'None', value: '' }, ...serverOptions]}
                     title='Server'
                     titleStyle='font-psemibold text-lg'
                     value={value}
@@ -145,7 +152,7 @@ const Search = () => {
                 name='race'
                 render={({ field: { onChange, value } }) => (
                   <Select
-                    data={selectData.race}
+                    data={[{ label: 'None', value: '' }, ...selectData.race]}
                     title='Race'
                     titleStyle='font-psemibold text-lg'
                     value={value}
@@ -161,7 +168,7 @@ const Search = () => {
                 name='job'
                 render={({ field: { onChange, value } }) => (
                   <Select
-                    data={selectData.job}
+                    data={[{ label: 'None', value: '' }, ...selectData.job]}
                     title='Job'
                     titleStyle='font-psemibold text-lg'
                     value={value}

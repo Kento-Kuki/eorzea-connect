@@ -5,6 +5,7 @@ import {
   Image,
   RefreshControl,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -69,12 +70,20 @@ const Home = () => {
               />
             </>
           )}
-          ListEmptyComponent={() => (
-            <EmptyState
-              title='No Posts Found'
-              subtitle='Be the first one to create a post'
-            />
-          )}
+          ListEmptyComponent={() =>
+            loading ? (
+              <ActivityIndicator
+                size={'large'}
+                color='primary'
+                className='mt-20'
+              />
+            ) : (
+              <EmptyState
+                title='No Posts Found'
+                subtitle='Be the first one to create a post'
+              />
+            )
+          }
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }

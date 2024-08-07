@@ -15,7 +15,11 @@ const Welcome = () => {
 
   return (
     <BackgroundLayout>
-      <SafeAreaView className='h-full' style={{ flex: 1 }}>
+      <SafeAreaView
+        className='h-full'
+        style={{ flex: 1 }}
+        edges={['top', 'left', 'right']}
+      >
         <ScrollView
           contentContainerStyle={{
             height: '100%',

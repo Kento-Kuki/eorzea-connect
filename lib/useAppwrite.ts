@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 
 const useAppwrite = (fn: () => Promise<any>) => {
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
