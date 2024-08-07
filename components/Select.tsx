@@ -11,6 +11,7 @@ interface SelectProps {
   containerStyle?: string;
   titleStyle?: string;
   onChange: (value: string) => void;
+  error?: string | undefined;
 }
 
 const Select = ({
@@ -22,6 +23,7 @@ const Select = ({
   containerStyle,
   titleStyle,
   onChange,
+  error,
 }: SelectProps) => {
   return (
     <View className={`space-y-1 ${containerStyle}`}>
@@ -48,6 +50,7 @@ const Select = ({
         containerStyle={{ borderRadius: 8, overflow: 'hidden' }}
         dropdownPosition={position}
       />
+      {error && <Text className='text-red-500 font-pmedium'>{error}</Text>}
     </View>
   );
 };

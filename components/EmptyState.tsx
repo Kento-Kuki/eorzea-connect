@@ -23,7 +23,7 @@ const EmptyState = ({ title, subtitle }: EmptyStateProps) => {
 
       <CustomButton
         onPress={() => router.push('/home')}
-        containerStyles='w-full my-5'
+        containerStyles='w-full my-5 px-4'
       >
         Create Post
       </CustomButton>

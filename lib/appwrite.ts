@@ -175,6 +175,19 @@ export const updateUser = async (
   }
 };
 
+export const updatePassword = async (
+  newPassword: string,
+  currentPassword: string
+) => {
+  try {
+    await account.updatePassword(newPassword, currentPassword);
+    return;
+  } catch (error) {
+    console.error(error);
+    throw new Error(error as string);
+  }
+};
+
 export const getAllPosts = async () => {
   try {
     const response = await databases.listDocuments(
@@ -283,6 +296,44 @@ export const searchPosts = async (query: string) => {
     }));
 
     return formattedPosts;
+  } catch (error) {
+    console.log(error);
+    throw new Error(error as string);
+  }
+};
+
+export const getMyPosts = async (userId: string) => {
+  try {
+    const response = await databases.listDocuments(
+      config.databaseId,
+      config.postsCollectionId,
+      [Query.equal('users', userId)]
+    );
+
+    const posts: Post[] = response.documents.map((post) => ({
+      id: post.$id,
+      title: post.title,
+      content: post.content,
+      author: {
+        id: post.users.$id,
+        username: post.users.username,
+        avatar: post.users.avatar,
+        accountId: post.users.accountId,
+        isSetupComplete: post.users.isSetupComplete,
+        age: post.users.age,
+        gender: post.users.gender,
+        race: post.users.race,
+        job: post.users.job,
+        activeTime: post.users.activeTime,
+        playStyle: post.users.playStyle,
+        server: post.users.server,
+        dataCenter: post.users.dataCenter,
+      } as User,
+      createdAt: post.$createdAt,
+      updatedAt: post.$updatedAt,
+    }));
+
+    return posts;
   } catch (error) {
     console.log(error);
     throw new Error(error as string);

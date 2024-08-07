@@ -11,6 +11,7 @@ interface FormFieldProps {
   inputTextStyles?: string;
   keyboardType?: string;
   placeholder?: string;
+  error?: string | undefined;
 }
 
 const FormField = ({
@@ -23,6 +24,7 @@ const FormField = ({
   inputStyles,
   keyboardType,
   placeholder,
+  error,
 }: FormFieldProps) => {
   const [showPassword, setShowPassword] = useState(false);
   return (
@@ -55,6 +57,7 @@ const FormField = ({
           </TouchableOpacity>
         )}
       </View>
+      {error && <Text className='text-red-500 font-pmedium'>{error}</Text>}
     </View>
   );
 };

@@ -12,10 +12,12 @@ import { selectData } from '@/constants/selectData';
 import { IUserForm, SelectType } from '@/types/User';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { updateUser } from '@/lib/appwrite';
-import { router } from 'expo-router';
-import { userSchema } from '@/validation/userSchema';
+import { Link, router } from 'expo-router';
+import { FontAwesome } from '@expo/vector-icons';
 import { zodResolver } from '@hookform/resolvers/zod';
-const SetUp = () => {
+import { userSchema } from '@/validation/userSchema';
+
+const EditProfile = () => {
   const { user, setUser } = useGlobalContext();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,14 +33,14 @@ const SetUp = () => {
     defaultValues: {
       username: user?.username || '',
       avatar: user?.avatar || '',
-      age: '',
-      gender: '',
-      race: '',
-      job: '',
-      server: '',
-      dataCenter: '',
-      playStyle: [],
-      activeTime: [],
+      age: user?.age || '',
+      gender: user?.gender || '',
+      race: user?.race || '',
+      job: user?.job || '',
+      server: user?.server || '',
+      dataCenter: user?.dataCenter || '',
+      playStyle: user?.playStyle || [],
+      activeTime: user?.activeTime || [],
     },
   });
 
@@ -66,7 +68,7 @@ const SetUp = () => {
       await updateUser(user.id, updatedData);
       setUser({ ...user, ...updatedData });
       Alert.alert('Success', 'Account setup complete!');
-      router.push('/home');
+      router.replace('/profile');
     } catch (error) {
       Alert.alert('Error', 'Failed to set up account');
     } finally {
@@ -76,11 +78,12 @@ const SetUp = () => {
 
   return (
     <BackgroundLayout>
-      <SafeAreaView className='h-full mx-4'>
-        <View className='mt-10'>
-          <Text className='text-white text-2xl font-pbold'>
-            Let's get started with your account setup!
-          </Text>
+      <SafeAreaView className='h-full mx-4' edges={['top', 'left', 'right']}>
+        <View className=' mt-4 px-4 relative flex-row items-center justify-center'>
+          <Link href='/profile' className='absolute left-2 top-0' asChild>
+            <FontAwesome name='arrow-left' size={24} color='white' />
+          </Link>
+          <Text className='font-pmedium text-2xl text-white'>Edit Profile</Text>
         </View>
         <ScrollView className='bg-secondary rounded-2xl my-4'>
           <View className='flex justify-center items-center space-y-4 w-full px-6 py-10'>
@@ -233,7 +236,11 @@ const SetUp = () => {
             </View>
           </View>
         </ScrollView>
-        <CustomButton isLoading={isSubmitting} onPress={handleSubmit(onSubmit)}>
+        <CustomButton
+          isLoading={isSubmitting}
+          onPress={handleSubmit(onSubmit)}
+          containerStyles='mb-4'
+        >
           Save
         </CustomButton>
       </SafeAreaView>
@@ -241,4 +248,4 @@ const SetUp = () => {
   );
 };
 
-export default SetUp;
+export default EditProfile;
