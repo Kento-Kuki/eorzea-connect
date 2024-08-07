@@ -8,6 +8,7 @@ interface CheckBoxProps {
   options: string[];
   value: string[];
   onChange: (selectedOptions: string[]) => void;
+  error?: string | undefined;
 }
 
 const CheckBox = ({
@@ -16,6 +17,7 @@ const CheckBox = ({
   options,
   value,
   onChange,
+  error,
 }: CheckBoxProps) => {
   const [selected, setSelected] = useState<string[]>(value);
 
@@ -35,6 +37,7 @@ const CheckBox = ({
   return (
     <View className='w-full my-4 space-y-2'>
       <Text className={`font-pbold text-xl ${titleStyle}`}>{title}</Text>
+      {error && <Text className='text-red-500 font-pmedium'>{error}</Text>}
       <View className='flex flex-row flex-wrap gap-y-2'>
         {options.map((option) => (
           <View key={option} className='flex-row items-center'>

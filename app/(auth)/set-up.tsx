@@ -13,24 +13,34 @@ import { IUserForm, SelectType } from '@/types/User';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { updateUser } from '@/lib/appwrite';
 import { router } from 'expo-router';
-
+import { userSchema } from '@/validation/userSchema';
+import { zodResolver } from '@hookform/resolvers/zod';
 const SetUp = () => {
   const { user, setUser } = useGlobalContext();
-  const { control, handleSubmit, setValue, getValues, watch } =
-    useForm<IUserForm>({
-      defaultValues: {
-        username: user?.username || '',
-        avatar: user?.avatar || '',
-        age: '',
-        gender: '',
-        race: '',
-        job: '',
-        server: '',
-        dataCenter: '',
-        playStyle: [],
-        activeTime: [],
-      },
-    });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    getValues,
+    watch,
+    formState: { errors },
+  } = useForm<IUserForm>({
+    resolver: zodResolver(userSchema),
+    defaultValues: {
+      username: user?.username || '',
+      avatar: user?.avatar || '',
+      age: '',
+      gender: '',
+      race: '',
+      job: '',
+      server: '',
+      dataCenter: '',
+      playStyle: [],
+      activeTime: [],
+    },
+  });
 
   const [dcOptions, setDcOptions] = useState<SelectType[]>(
     selectData.servers.dataCenter
@@ -50,6 +60,7 @@ const SetUp = () => {
 
   const onSubmit = async (data: IUserForm) => {
     try {
+      setIsSubmitting(true);
       if (!user) return;
       const updatedData = { ...data, isSetupComplete: true };
       await updateUser(user.id, updatedData);
@@ -58,6 +69,8 @@ const SetUp = () => {
       router.push('/home');
     } catch (error) {
       Alert.alert('Error', 'Failed to set up account');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -93,6 +106,7 @@ const SetUp = () => {
                     inputStyles='w-[200px] h-10 rounded-lg bg-white border focus:border-black'
                     labelStyles='text-black font-pmedium'
                     placeholder='Username'
+                    error={errors.username?.message}
                   />
                 )}
               />
@@ -108,6 +122,7 @@ const SetUp = () => {
                       onChange={onChange}
                       containerStyle='w-1/2 mr-2'
                       placeholder='Select age'
+                      error={errors.age?.message}
                     />
                   )}
                 />
@@ -122,6 +137,7 @@ const SetUp = () => {
                       onChange={onChange}
                       containerStyle='w-1/2'
                       placeholder='Select gender'
+                      error={errors.gender?.message}
                     />
                   )}
                 />
@@ -132,12 +148,14 @@ const SetUp = () => {
               options={checkboxOptions.activeTime}
               value={getValues('activeTime') || []}
               onChange={(value) => setValue('activeTime', value)}
+              error={errors.activeTime?.message}
             />
             <CheckBox
               title='Play Style'
               options={checkboxOptions.playStyle}
               value={getValues('playStyle') || []}
               onChange={(value) => setValue('playStyle', value)}
+              error={errors.playStyle?.message}
             />
             <Text className='font-pbold text-3xl text-center'>
               Character Details
@@ -158,6 +176,7 @@ const SetUp = () => {
                     containerStyle='w-1/2 mr-2'
                     placeholder='Select DC'
                     position='top'
+                    error={errors.dataCenter?.message}
                   />
                 )}
               />
@@ -173,6 +192,7 @@ const SetUp = () => {
                     containerStyle='w-1/2'
                     placeholder='Select server'
                     position='top'
+                    error={errors.server?.message}
                   />
                 )}
               />
@@ -190,6 +210,7 @@ const SetUp = () => {
                     containerStyle='w-1/2 mb-2'
                     placeholder='Select race'
                     position='top'
+                    error={errors.race?.message}
                   />
                 )}
               />
@@ -205,13 +226,14 @@ const SetUp = () => {
                     containerStyle='w-1/2'
                     placeholder='Select job'
                     position='top'
+                    error={errors.job?.message}
                   />
                 )}
               />
             </View>
           </View>
         </ScrollView>
-        <CustomButton isLoading={false} onPress={handleSubmit(onSubmit)}>
+        <CustomButton isLoading={isSubmitting} onPress={handleSubmit(onSubmit)}>
           Save
         </CustomButton>
       </SafeAreaView>

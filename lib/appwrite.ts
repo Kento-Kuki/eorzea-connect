@@ -175,6 +175,19 @@ export const updateUser = async (
   }
 };
 
+export const updatePassword = async (
+  newPassword: string,
+  currentPassword: string
+) => {
+  try {
+    await account.updatePassword(newPassword, currentPassword);
+    return;
+  } catch (error) {
+    console.error(error);
+    throw new Error(error as string);
+  }
+};
+
 export const getAllPosts = async () => {
   try {
     const response = await databases.listDocuments(

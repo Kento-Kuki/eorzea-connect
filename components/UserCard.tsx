@@ -1,11 +1,11 @@
 import { View, Text, Image } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import { User } from '@/types/User';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import CustomButton from './CustomButton';
 import { FontAwesome } from '@expo/vector-icons';
-import { Divider, Menu } from 'react-native-paper';
-import { router } from 'expo-router';
+import { Dialog, Divider, Menu, Portal } from 'react-native-paper';
+import { Href, router } from 'expo-router';
 
 interface UserCardProps {
   user: User;
@@ -13,11 +13,16 @@ interface UserCardProps {
 
 const UserCard = ({ user }: UserCardProps) => {
   const { user: currentUser } = useGlobalContext();
-  const [visible, setVisible] = React.useState(false);
+  const [menuVisible, setMenuVisible] = useState(false);
+  const [dialogVisible, setDialogVisible] = useState(false);
 
-  const openMenu = () => setVisible(true);
+  const showDialog = () => setDialogVisible(true);
 
-  const closeMenu = () => setVisible(false);
+  const hideDialog = () => setDialogVisible(false);
+
+  const openMenu = () => setMenuVisible(true);
+
+  const closeMenu = () => setMenuVisible(false);
   return (
     <View className='flex space-y-4 justify-between items-center py-8 px-10 bg-secondary rounded-xl relative'>
       {currentUser?.id === user.id && (
@@ -25,7 +30,7 @@ const UserCard = ({ user }: UserCardProps) => {
           <Menu
             anchorPosition='bottom'
             contentStyle={{ backgroundColor: 'white' }}
-            visible={visible}
+            visible={menuVisible}
             onDismiss={closeMenu}
             anchor={
               <CustomButton
@@ -38,7 +43,7 @@ const UserCard = ({ user }: UserCardProps) => {
           >
             <Menu.Item
               onPress={() => {
-                router.push('profile/edit');
+                router.push('/profile/edit' as Href<'/profile/edit'>);
                 closeMenu();
               }}
               title='Edit Profile'
@@ -46,7 +51,7 @@ const UserCard = ({ user }: UserCardProps) => {
             />
             <Menu.Item
               onPress={() => {
-                // router.push('change-password');
+                router.push('/profile/password' as Href<'/profile/password'>);
                 closeMenu();
               }}
               title='Change Password'
@@ -55,13 +60,45 @@ const UserCard = ({ user }: UserCardProps) => {
             <Divider />
             <Menu.Item
               onPress={() => {
-                //TODO: delete account
+                showDialog();
                 closeMenu();
               }}
               title='Delete Account'
               titleStyle={{ color: 'red', fontWeight: 'bold' }}
             />
           </Menu>
+          <Portal>
+            <Dialog
+              visible={dialogVisible}
+              onDismiss={hideDialog}
+              style={{ backgroundColor: 'white' }}
+            >
+              <Dialog.Title className='font-pmedium text-black'>
+                Delete Account
+              </Dialog.Title>
+              <Dialog.Content>
+                <Text className='font-pmedium text-md'>
+                  Are you sure you want to delete your account?
+                </Text>
+                <Text className='font-pmedium text-md'>
+                  This action cannot be undone and all your data will be
+                  permanently lost.
+                </Text>
+              </Dialog.Content>
+              <Dialog.Actions>
+                <CustomButton
+                  onPress={() => {
+                    hideDialog();
+                    //TODO: delete account
+                    router.replace('/');
+                  }}
+                  containerStyles='bg-red-500 px-5 h-12'
+                >
+                  Delete
+                </CustomButton>
+              </Dialog.Actions>
+            </Dialog>
+          </Portal>
         </View>
       )}
       <View className='flex justify-center items-center space-y-2 w-full'>
