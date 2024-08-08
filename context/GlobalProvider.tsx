@@ -7,6 +7,7 @@ import {
 } from 'react';
 import { getCurrentUser } from '../lib/appwrite';
 import { User } from '@/types/User';
+import { IPostForm, Post } from '@/types/Post';
 
 // Context の型を定義
 interface GlobalContextType {
@@ -15,6 +16,8 @@ interface GlobalContextType {
   user: User | null;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
   isLoading: boolean;
+  postData: IPostForm | Post | null;
+  setPostData: React.Dispatch<React.SetStateAction<IPostForm | Post | null>>;
 }
 
 // デフォルト値には undefined を設定
@@ -24,6 +27,8 @@ const GlobalContext = createContext<GlobalContextType>({
   user: null,
   setUser: () => {},
   isLoading: true,
+  postData: null,
+  setPostData: () => {},
 });
 
 // useGlobalContext フック
@@ -34,6 +39,7 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [postData, setPostData] = useState<IPostForm | Post | null>(null);
 
   useEffect(() => {
     getCurrentUser()
@@ -62,6 +68,8 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
         user,
         setUser,
         isLoading,
+        postData,
+        setPostData,
       }}
     >
       {children}

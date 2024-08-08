@@ -8,3 +8,9 @@ export type Post = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type IPostForm = {
+  title: string;
+  content: string;
+  author: User;
+};

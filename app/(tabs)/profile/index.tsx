@@ -20,23 +20,26 @@ import { Post } from '@/types/Post';
 import EmptyState from '@/components/EmptyState';
 
 const Profile = () => {
-  const { user, setUser, setIsLoggedIn, isLoading } = useGlobalContext();
+  const { user, setUser, setIsLoggedIn, isLoading, isLoggedIn, setPostData } =
+    useGlobalContext();
   const [refreshing, setRefreshing] = useState(false);
 
-  if (!isLoading && !user) return <Redirect href='/sign-in' />;
-
+  if (isLoading) return;
+  if (!isLoggedIn || !user) return <Redirect href='/sign-in' />;
   const {
     data: posts,
     loading,
     refetch,
-  } = useAppwrite(() => getMyPosts(user?.id!));
-
+  } = useAppwrite(() => getMyPosts(user.id));
   const onSignOut = async () => {
-    await signOut();
-    setUser(null);
-    setIsLoggedIn(false);
-
-    router.replace('/sign-in');
+    try {
+      await signOut();
+      setUser(null);
+      setIsLoggedIn(false);
+      router.replace('/sign-in');
+    } catch (error) {
+      console.error('Sign out error:', error);
+    }
   };
 
   const onRefresh = async () => {
@@ -65,14 +68,22 @@ const Profile = () => {
             </Text>
           </View>
           <UserCard user={user!} />
-          <View className='flex justify-center items-center space-y-10 mt-5'>
+          <View className=' space-y-10 mt-5'>
             <Text className='font-psemibold text-3xl text-white text-center'>
               My Posts
             </Text>
             {loading ? (
               <ActivityIndicator size='large' color='white' />
-            ) : posts ? (
-              posts.map((post: Post) => <PostCard key={post.id} post={post} />)
+            ) : posts.length > 0 ? (
+              posts.map((post: Post) => (
+                <PostCard
+                  key={post.id}
+                  post={post}
+                  userId={user?.id}
+                  refetch={refetch}
+                  setPostData={setPostData}
+                />
+              ))
             ) : (
               <EmptyState
                 title='No Posts Found'

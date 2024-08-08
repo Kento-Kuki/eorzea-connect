@@ -22,7 +22,7 @@ const EmptyState = ({ title, subtitle }: EmptyStateProps) => {
       <Text className='text-sm font-pmedium text-gray-100'>{subtitle}</Text>
 
       <CustomButton
-        onPress={() => router.push('/home')}
+        onPress={() => router.push('/create')}
         containerStyles='w-full my-5 px-4'
       >
         Create Post
