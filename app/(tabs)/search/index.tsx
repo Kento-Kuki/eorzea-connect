@@ -45,7 +45,6 @@ const Search = () => {
 
   const onSubmit = (data: ISearch) => {
     const query = encodeURIComponent(JSON.stringify(data));
-    console.log(data);
     router.push(`/search/${query}` as any);
   };
 
