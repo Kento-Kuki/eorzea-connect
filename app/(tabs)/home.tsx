@@ -19,11 +19,14 @@ import { Post } from '@/types/Post';
 import PostCard from '@/components/PostCard';
 import CustomButton from '@/components/CustomButton';
 import { FontAwesome } from '@expo/vector-icons';
+import { Redirect, router } from 'expo-router';
 
 const Home = () => {
-  const { user } = useGlobalContext();
+  const { user, isLoggedIn, setPostData } = useGlobalContext();
   const [refreshing, setRefreshing] = useState(false);
   const { data: posts, loading, refetch } = useAppwrite(getAllPosts);
+
+  if (!isLoggedIn || !user) return <Redirect href='/sign-in' />;
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -40,7 +43,14 @@ const Home = () => {
         <FlatList
           data={posts as Post[]}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <PostCard post={item} />}
+          renderItem={({ item }) => (
+            <PostCard
+              post={item}
+              userId={user?.id}
+              refetch={refetch}
+              setPostData={setPostData}
+            />
+          )}
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={() => (
             <>
@@ -88,7 +98,10 @@ const Home = () => {
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
         />
-        <CustomButton containerStyles='absolute bottom-2 right-2 w-14 h-14 rounded-full '>
+        <CustomButton
+          containerStyles='absolute bottom-2 right-2 w-14 h-14 rounded-full'
+          onPress={() => router.push('/create')}
+        >
           <FontAwesome name='plus' size={24} color='white' />
         </CustomButton>
       </SafeAreaView>

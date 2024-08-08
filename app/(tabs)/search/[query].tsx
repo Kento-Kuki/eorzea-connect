@@ -2,7 +2,7 @@ import { View, FlatList, Image, ActivityIndicator, Text } from 'react-native';
 import React from 'react';
 import BackgroundLayout from '@/components/BackgroundLayout';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Link, useLocalSearchParams } from 'expo-router';
+import { Link, router, useLocalSearchParams } from 'expo-router';
 import PostCard from '@/components/PostCard';
 import { Post } from '@/types/Post';
 import EmptyState from '@/components/EmptyState';
@@ -51,7 +51,10 @@ const Result = () => {
             )
           }
         />
-        <CustomButton containerStyles='absolute bottom-2 right-2 w-14 h-14 rounded-full '>
+        <CustomButton
+          containerStyles='absolute bottom-2 right-2 w-14 h-14 rounded-full '
+          onPress={() => router.push('/create')}
+        >
           <FontAwesome name='plus' size={24} color='white' />
         </CustomButton>
       </SafeAreaView>

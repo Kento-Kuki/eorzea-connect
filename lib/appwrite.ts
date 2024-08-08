@@ -1,4 +1,4 @@
-import { Post } from '@/types/Post';
+import { IPostForm, Post } from '@/types/Post';
 import { ISearch, IUserForm, User } from '@/types/User';
 import {
   Account,
@@ -192,7 +192,8 @@ export const getAllPosts = async () => {
   try {
     const response = await databases.listDocuments(
       config.databaseId,
-      config.postsCollectionId
+      config.postsCollectionId,
+      [Query.orderDesc('$createdAt')]
     );
     const posts: Post[] = response.documents.map((post) => ({
       id: post.$id,
@@ -265,6 +266,7 @@ export const searchPosts = async (query: string) => {
     const postsPromises = userIds.map((id) =>
       databases.listDocuments(config.databaseId, config.postsCollectionId, [
         Query.equal('users', id),
+        Query.orderDesc('$createdAt'),
       ])
     );
 
@@ -307,7 +309,7 @@ export const getMyPosts = async (userId: string) => {
     const response = await databases.listDocuments(
       config.databaseId,
       config.postsCollectionId,
-      [Query.equal('users', userId)]
+      [Query.equal('users', userId), Query.orderDesc('$createdAt')]
     );
 
     const posts: Post[] = response.documents.map((post) => ({
@@ -334,6 +336,59 @@ export const getMyPosts = async (userId: string) => {
     }));
 
     return posts;
+  } catch (error) {
+    console.log(error);
+    throw new Error(error as string);
+  }
+};
+
+export const createPost = async (data: IPostForm) => {
+  try {
+    const newPost = await databases.createDocument(
+      config.databaseId,
+      config.postsCollectionId,
+      ID.unique(),
+      {
+        title: data.title,
+        content: data.content,
+        users: data.author.id,
+      }
+    );
+
+    return newPost;
+  } catch (error) {
+    console.log(error);
+    throw new Error(error as string);
+  }
+};
+
+export const updatePost = async (data: Post) => {
+  try {
+    const updatedPost = await databases.updateDocument(
+      config.databaseId,
+      config.postsCollectionId,
+      data.id,
+      {
+        title: data.title,
+        content: data.content,
+      }
+    );
+    return updatedPost;
+  } catch (error) {
+    console.log(error);
+    throw new Error(error as string);
+  }
+};
+
+export const deletePost = async (id: string) => {
+  try {
+    await databases.deleteDocument(
+      config.databaseId,
+      config.postsCollectionId,
+      id
+    );
+
+    return;
   } catch (error) {
     console.log(error);
     throw new Error(error as string);

@@ -9,9 +9,10 @@ interface FormFieldProps {
   labelStyles?: string;
   inputStyles?: string;
   inputTextStyles?: string;
-  keyboardType?: string;
+  keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad';
   placeholder?: string;
   error?: string | undefined;
+  multiline?: boolean;
 }
 
 const FormField = ({
@@ -22,9 +23,10 @@ const FormField = ({
   labelStyles,
   inputTextStyles,
   inputStyles,
-  keyboardType,
+  keyboardType = 'default',
   placeholder,
   error,
+  multiline,
 }: FormFieldProps) => {
   const [showPassword, setShowPassword] = useState(false);
   return (
@@ -33,15 +35,17 @@ const FormField = ({
         {title}
       </Text>
       <View
-        className={`w-full h-16 px-4 rounded-2xl bg-gray-800 border-2 border-gray-800 focus:border-primary flex-row items-center ${inputStyles}`}
+        className={`w-full h-16 px-4 rounded-2xl bg-gray-800 border-2 border-gray-800 focus:border-primary flex-row items-center  ${inputStyles}`}
       >
         <TextInput
-          className={`flex-1 text-white font-psemibold text-base ${inputTextStyles}`}
+          className={`flex-1 text-white font-psemibold text-base ${inputTextStyles} `}
           value={value}
           placeholder={placeholder}
           placeholderTextColor='#9E9E9E'
           onChangeText={handleChangeText}
           secureTextEntry={title === 'Password' && !showPassword}
+          keyboardType={keyboardType}
+          multiline={multiline}
         />
         {title === 'Password' && (
           <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
