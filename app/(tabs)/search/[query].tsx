@@ -10,13 +10,19 @@ import CustomButton from '@/components/CustomButton';
 import { FontAwesome } from '@expo/vector-icons';
 import { searchPosts } from '@/lib/appwrite';
 import useAppwrite from '@/lib/useAppwrite';
+import { useGlobalContext } from '@/context/GlobalProvider';
 
 const Result = () => {
+  const { user, isLoggedIn, isLoading, setPostData } = useGlobalContext();
   const { query } = useLocalSearchParams();
-  const { data: posts, loading } = useAppwrite(() =>
-    searchPosts(query as string)
-  );
+  const {
+    data: posts,
+    loading,
+    refetch,
+  } = useAppwrite(() => searchPosts(query as string));
 
+  if (isLoading) return;
+  if (!isLoggedIn || !user) return router.push('/sign-in');
   return (
     <BackgroundLayout>
       <SafeAreaView
@@ -26,7 +32,14 @@ const Result = () => {
         <FlatList
           data={loading ? [] : (posts as Post[])}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <PostCard post={item} />}
+          renderItem={({ item }) => (
+            <PostCard
+              post={item}
+              userId={user.id}
+              refetch={refetch}
+              setPostData={setPostData}
+            />
+          )}
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={() => (
             <View className='flex my-6 px-4 flex-row  items-center space-x-6'>
