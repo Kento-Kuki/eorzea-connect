@@ -7,20 +7,32 @@ import Separator from './Separator';
 import CustomButton from './CustomButton';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Dialog, Menu, Portal } from 'react-native-paper';
-import { deletePost } from '@/lib/appwrite';
+import { addBookmark, deletePost, removeBookmark } from '@/lib/appwrite';
 import { router } from 'expo-router';
+import Toast from 'react-native-toast-message';
 
 interface PostProps {
   post: Post;
   userId: string;
   refetch: () => Promise<void>;
   setPostData: React.Dispatch<React.SetStateAction<Post | IPostForm | null>>;
+  setBookmarks?: React.Dispatch<React.SetStateAction<string[]>>;
+  isBookmarked?: boolean;
 }
 
-const PostCard = ({ post, userId, refetch, setPostData }: PostProps) => {
+const PostCard = ({
+  post,
+  userId,
+  refetch,
+  setPostData,
+  setBookmarks,
+  isBookmarked,
+}: PostProps) => {
   const [menuVisible, setMenuVisible] = useState(false);
   const [dialogVisible, setDialogVisible] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isToggling, setIsToggling] = useState(false);
+  const [bookmarkStatus, setBookmarkStatus] = useState(isBookmarked);
   const isOwnPost = post.author.id === userId;
 
   const showDialog = () => setDialogVisible(true);
@@ -41,6 +53,46 @@ const PostCard = ({ post, userId, refetch, setPostData }: PostProps) => {
       setIsDeleting(false);
     }
   };
+
+  const toggleBookmark = async () => {
+    setIsToggling(true);
+    try {
+      if (bookmarkStatus) {
+        await removeBookmark(post.id, userId);
+        Toast.show({
+          type: 'success',
+          text1: 'Bookmark removed',
+          position: 'top',
+        });
+      } else {
+        await addBookmark(post.id, userId);
+        Toast.show({
+          type: 'success',
+          text1: 'Bookmark added',
+          position: 'top',
+        });
+      }
+      setBookmarkStatus(!bookmarkStatus);
+      setBookmarks &&
+        setBookmarks((prev) => {
+          if (prev?.includes(post.id)) {
+            return prev?.filter((id) => id !== post.id);
+          } else {
+            return [...(prev || []), post.id];
+          }
+        });
+    } catch (error) {
+      console.error('Failed to toggle bookmark:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Failed to toggle bookmark',
+        position: 'top',
+      });
+    } finally {
+      setIsToggling(false);
+    }
+  };
+
   return (
     <View className='bg-secondary rounded-2xl my-4 pl-4 pr-2'>
       {/* Title */}
@@ -128,8 +180,16 @@ const PostCard = ({ post, userId, refetch, setPostData }: PostProps) => {
       {!isOwnPost && (
         <View className='flex flex-row justify-between items-center mx-7 my-2'>
           <CustomButton containerStyles='px-4'>Send message</CustomButton>
-          <CustomButton containerStyles='w-16'>
-            <FontAwesome name='bookmark-o' size={22} color='white' />
+          <CustomButton
+            containerStyles='w-16'
+            onPress={toggleBookmark}
+            isLoading={isToggling}
+          >
+            {bookmarkStatus ? (
+              <FontAwesome name='bookmark' size={22} color='white' />
+            ) : (
+              <FontAwesome name='bookmark-o' size={22} color='white' />
+            )}
           </CustomButton>
         </View>
       )}

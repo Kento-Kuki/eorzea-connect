@@ -13,7 +13,7 @@ import BackgroundLayout from '@/components/BackgroundLayout';
 import Info from '@/components/Info';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import EmptyState from '@/components/EmptyState';
-import { getAllPosts } from '@/lib/appwrite';
+import { getAllPosts, getUserBookmarks } from '@/lib/appwrite';
 import useAppwrite from '@/lib/useAppwrite';
 import { Post } from '@/types/Post';
 import PostCard from '@/components/PostCard';
@@ -24,10 +24,19 @@ import { Redirect, router } from 'expo-router';
 const Home = () => {
   const { user, isLoggedIn, setPostData } = useGlobalContext();
   const [refreshing, setRefreshing] = useState(false);
-  const { data: posts, loading, refetch } = useAppwrite(getAllPosts);
 
   if (!isLoggedIn || !user) return <Redirect href='/sign-in' />;
 
+  const { data: posts, loading, refetch } = useAppwrite(getAllPosts);
+  const {
+    data: bookmarks,
+    setData: setBookmarks,
+  }: {
+    data: string[];
+    setData: React.Dispatch<React.SetStateAction<string[]>>;
+  } = useAppwrite(() => getUserBookmarks(user?.id));
+
+  console.log(bookmarks);
   const onRefresh = async () => {
     setRefreshing(true);
     await refetch();
@@ -49,6 +58,8 @@ const Home = () => {
               userId={user?.id}
               refetch={refetch}
               setPostData={setPostData}
+              setBookmarks={setBookmarks}
+              isBookmarked={bookmarks?.includes(item.id)}
             />
           )}
           showsVerticalScrollIndicator={false}

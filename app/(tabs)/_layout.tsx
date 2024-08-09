@@ -98,7 +98,7 @@ const TabsLayout = () => {
           headerShown: false,
           tabBarIcon: ({ color, focused }) => (
             <TabIcon
-              icon={<FontAwesome name='bookmark-o' size={22} color={color} />}
+              icon={<FontAwesome name='bookmark' size={22} color={color} />}
               color={color}
               name='Bookmark'
               focused={focused}

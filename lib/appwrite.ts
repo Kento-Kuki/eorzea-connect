@@ -16,6 +16,7 @@ export const config = {
   databaseId: '66a91312000bb4d4ce75',
   userCollectionId: '66a9133f003ac403877a',
   postsCollectionId: '66a9137d0029c55d307a',
+  bookmarksCollectionId: '66b568f6001fd78cc093',
   storageId: '66a914bd00338fb24fe6',
 };
 
@@ -342,6 +343,61 @@ export const getMyPosts = async (userId: string) => {
   }
 };
 
+export const getPostById = async (postIds: string[]) => {
+  try {
+    const promises = postIds.map((id) =>
+      databases.getDocument(config.databaseId, config.postsCollectionId, id)
+    );
+    const posts = await Promise.all(promises);
+    const formattedPosts = posts.map((post) => ({
+      id: post.$id,
+      title: post.title,
+      content: post.content,
+      author: {
+        id: post.users.$id,
+        username: post.users.username,
+        avatar: post.users.avatar,
+        accountId: post.users.accountId,
+        isSetupComplete: post.users.isSetupComplete,
+        age: post.users.age,
+        gender: post.users.gender,
+        race: post.users.race,
+        job: post.users.job,
+        activeTime: post.users.activeTime,
+        playStyle: post.users.playStyle,
+        server: post.users.server,
+        dataCenter: post.users.dataCenter,
+      } as User,
+      createdAt: post.$createdAt,
+      updatedAt: post.$updatedAt,
+    }));
+
+    return formattedPosts;
+  } catch (error) {
+    console.log(error);
+    throw new Error(error as string);
+  }
+};
+
+export const getBookmarkedPosts = async (userId: string) => {
+  try {
+    const response = await databases.listDocuments(
+      config.databaseId,
+      config.bookmarksCollectionId,
+      [Query.equal('userId', userId), Query.orderDesc('$createdAt')]
+    );
+
+    const postIds: string[] = response.documents.map((post) => post.postId);
+
+    const posts = await getPostById(postIds);
+
+    return posts;
+  } catch (error) {
+    console.log(error);
+    throw new Error(error as string);
+  }
+};
+
 export const createPost = async (data: IPostForm) => {
   try {
     const newPost = await databases.createDocument(
@@ -389,6 +445,65 @@ export const deletePost = async (id: string) => {
     );
 
     return;
+  } catch (error) {
+    console.log(error);
+    throw new Error(error as string);
+  }
+};
+
+export const addBookmark = async (postId: string, userId: string) => {
+  try {
+    const newBookmark = await databases.createDocument(
+      config.databaseId,
+      config.bookmarksCollectionId,
+      ID.unique(),
+      {
+        postId,
+        userId,
+      }
+    );
+    return newBookmark;
+  } catch (error) {
+    console.log(error);
+    throw new Error(error as string);
+  }
+};
+
+export const removeBookmark = async (postId: string, userId: string) => {
+  try {
+    const response = await databases.listDocuments(
+      config.databaseId,
+      config.bookmarksCollectionId,
+      [Query.equal('userId', userId), Query.equal('postId', postId)]
+    );
+
+    const bookmark = response.documents[0];
+    if (!bookmark) {
+      throw new Error('Bookmark not found');
+    }
+
+    const deletedBookmark = await databases.deleteDocument(
+      config.databaseId,
+      config.bookmarksCollectionId,
+      bookmark.$id
+    );
+
+    return deletedBookmark;
+  } catch (error) {
+    console.log(error);
+    throw new Error(error as string);
+  }
+};
+
+export const getUserBookmarks = async (userId: string) => {
+  try {
+    const response = await databases.listDocuments(
+      config.databaseId,
+      config.bookmarksCollectionId,
+      [Query.equal('userId', userId)]
+    );
+
+    return response.documents.map((bookmark) => bookmark.postId);
   } catch (error) {
     console.log(error);
     throw new Error(error as string);

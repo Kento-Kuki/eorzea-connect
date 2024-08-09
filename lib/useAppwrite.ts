@@ -2,7 +2,7 @@ import { Alert } from 'react-native';
 import { useEffect, useState } from 'react';
 
 const useAppwrite = (fn: () => Promise<any>) => {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
   const fetchData = async () => {
@@ -23,7 +23,7 @@ const useAppwrite = (fn: () => Promise<any>) => {
 
   const refetch = () => fetchData();
 
-  return { data, loading, refetch };
+  return { data, loading, refetch, setData };
 };
 
 export default useAppwrite;

@@ -3,6 +3,7 @@ import { useFonts } from 'expo-font';
 import { useEffect } from 'react';
 import { GlobalProvider } from '@/context/GlobalProvider';
 import { PaperProvider } from 'react-native-paper';
+import Toast from 'react-native-toast-message';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -44,6 +45,7 @@ const RootLayout = () => {
           <Stack.Screen name='(auth)' options={{ headerShown: false }} />
           <Stack.Screen name='create' options={{ headerShown: false }} />
         </Stack>
+        <Toast />
       </PaperProvider>
     </GlobalProvider>
   );
