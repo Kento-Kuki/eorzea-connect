@@ -1,7 +1,6 @@
 import { SplashScreen, Stack } from 'expo-router';
 import { useFonts } from 'expo-font';
 import { useEffect } from 'react';
-import { GlobalProvider } from '@/context/GlobalProvider';
 import { PaperProvider } from 'react-native-paper';
 import Toast from 'react-native-toast-message';
 import { useAuthStore } from '@/store/useAuthStore';
@@ -37,17 +36,15 @@ const RootLayout = () => {
   }
 
   return (
-    <GlobalProvider>
-      <PaperProvider>
-        <Stack>
-          <Stack.Screen name='index' options={{ headerShown: false }} />
-          <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
-          <Stack.Screen name='(auth)' options={{ headerShown: false }} />
-          <Stack.Screen name='create' options={{ headerShown: false }} />
-        </Stack>
-        <Toast />
-      </PaperProvider>
-    </GlobalProvider>
+    <PaperProvider>
+      <Stack>
+        <Stack.Screen name='index' options={{ headerShown: false }} />
+        <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
+        <Stack.Screen name='(auth)' options={{ headerShown: false }} />
+        <Stack.Screen name='create' options={{ headerShown: false }} />
+      </Stack>
+      <Toast />
+    </PaperProvider>
   );
 };
 
