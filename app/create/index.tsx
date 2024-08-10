@@ -5,18 +5,21 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import FormField from '@/components/FormField';
 import { IPostForm, Post } from '@/types/Post';
 import { Controller, useForm } from 'react-hook-form';
-import { useGlobalContext } from '@/context/GlobalProvider';
+
 import { Redirect, router } from 'expo-router';
 import CustomButton from '@/components/CustomButton';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { postSchema } from '@/validation/postSchema';
+import { useAuthStore } from '@/store/useAuthStore';
+import { usePostStore } from '@/store/usePostState';
 
 const Create = () => {
-  const { user, isLoggedIn, isLoading, postData, setPostData } =
-    useGlobalContext();
+  const user = useAuthStore((state) => state.user);
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
 
-  if (isLoading) return null;
+  const postData = usePostStore((state) => state.postData);
+  const setPostData = usePostStore((state) => state.setPostData);
 
   if (!isLoggedIn || !user) return <Redirect href='/sign-in' />;
 
@@ -24,7 +27,6 @@ const Create = () => {
     control,
     handleSubmit,
     formState: { errors },
-    getValues,
   } = useForm<IPostForm>({
     resolver: zodResolver(postSchema),
     defaultValues: {
@@ -35,7 +37,7 @@ const Create = () => {
   });
 
   const onSubmit = (data: IPostForm | Post) => {
-    setPostData((prev) => ({ ...prev, ...data, author: user }));
+    setPostData({ ...postData, ...data, author: user });
     router.push('/create/confirm');
   };
   return (

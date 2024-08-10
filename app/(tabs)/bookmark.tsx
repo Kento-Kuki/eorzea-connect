@@ -1,51 +1,51 @@
 import {
   View,
-  Text,
   RefreshControl,
   ActivityIndicator,
-  Image,
   FlatList,
 } from 'react-native';
 import React, { useState } from 'react';
 import BackgroundLayout from '@/components/BackgroundLayout';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useGlobalContext } from '@/context/GlobalProvider';
+
 import useAppwrite from '@/lib/useAppwrite';
-import {
-  getBookmarkedPosts,
-  getPostById,
-  getUserBookmarks,
-} from '@/lib/appwrite';
+import { getBookmarkedPosts, getUserBookmarks } from '@/lib/appwrite';
 import { Redirect } from 'expo-router';
 import EmptyState from '@/components/EmptyState';
 import PostCard from '@/components/PostCard';
 import { Post } from '@/types/Post';
+import { useAuthStore } from '@/store/useAuthStore';
+import { usePostStore } from '@/store/usePostState';
 
 const Bookmark = () => {
   const [refreshing, setRefreshing] = useState(false);
-  const { user, isLoggedIn, setPostData } = useGlobalContext();
-  if (!isLoggedIn || !user) return <Redirect href='/sign-in' />;
+  const user = useAuthStore((state) => state.user);
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+  const setBookmarks = usePostStore((state) => state.setBookmarks);
 
   const {
     data: posts,
     refetch,
     loading,
-  } = useAppwrite(() => getBookmarkedPosts(user?.id));
+  } = useAppwrite({
+    fetchFn: user
+      ? () => getBookmarkedPosts(user?.id)
+      : () => Promise.resolve([]),
+  });
 
-  const {
-    data: bookmarks,
-    setData: setBookmarks,
-  }: {
-    data: string[];
-    setData: React.Dispatch<React.SetStateAction<string[]>>;
-  } = useAppwrite(() => getUserBookmarks(user?.id));
+  const { data: bookmarks } = useAppwrite({
+    fetchFn: user
+      ? () => getUserBookmarks(user?.id)
+      : () => Promise.resolve([]),
+    setFn: (newBookmarks) => setBookmarks(() => newBookmarks),
+  });
 
   const onRefresh = async () => {
     setRefreshing(true);
     await refetch();
     setRefreshing(false);
   };
-
+  if (!isLoggedIn || !user) return <Redirect href='/sign-in' />;
   return (
     <BackgroundLayout>
       <SafeAreaView className=' h-full mx-4' edges={['top', 'left', 'right']}>
@@ -57,8 +57,6 @@ const Bookmark = () => {
               post={item}
               userId={user?.id}
               refetch={refetch}
-              setPostData={setPostData}
-              setBookmarks={setBookmarks}
               isBookmarked={bookmarks?.includes(item.id)}
             />
           )}

@@ -6,31 +6,35 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Redirect, router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import BackgroundLayout from '@/components/BackgroundLayout';
 import { getMyPosts, signOut } from '@/lib/appwrite';
-import { useGlobalContext } from '@/context/GlobalProvider';
 import UserCard from '@/components/UserCard';
 import { FontAwesome } from '@expo/vector-icons';
 import useAppwrite from '@/lib/useAppwrite';
 import PostCard from '@/components/PostCard';
 import { Post } from '@/types/Post';
 import EmptyState from '@/components/EmptyState';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const Profile = () => {
-  const { user, setUser, setIsLoggedIn, isLoading, isLoggedIn, setPostData } =
-    useGlobalContext();
+  const user = useAuthStore((state) => state.user);
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+  const setUser = useAuthStore((state) => state.setUser);
+  const setIsLoggedIn = useAuthStore((state) => state.setIsLoggedIn);
+
   const [refreshing, setRefreshing] = useState(false);
 
-  if (isLoading) return;
-  if (!isLoggedIn || !user) return <Redirect href='/sign-in' />;
   const {
-    data: posts,
+    data: posts = [],
     loading,
     refetch,
-  } = useAppwrite(() => getMyPosts(user.id));
+  } = useAppwrite({
+    fetchFn: user ? () => getMyPosts(user.id) : () => Promise.resolve([]),
+  });
+
   const onSignOut = async () => {
     try {
       await signOut();
@@ -48,6 +52,7 @@ const Profile = () => {
     setRefreshing(false);
   };
 
+  if (!isLoggedIn || !user) return <Redirect href='/sign-in' />;
   return (
     <BackgroundLayout>
       <SafeAreaView className='h-full mx-4' edges={['top', 'left', 'right']}>
@@ -74,14 +79,13 @@ const Profile = () => {
             </Text>
             {loading ? (
               <ActivityIndicator size='large' color='white' />
-            ) : posts.length > 0 ? (
+            ) : posts && posts.length > 0 ? (
               posts.map((post: Post) => (
                 <PostCard
                   key={post.id}
                   post={post}
                   userId={user?.id}
                   refetch={refetch}
-                  setPostData={setPostData}
                 />
               ))
             ) : (

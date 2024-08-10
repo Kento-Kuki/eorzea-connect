@@ -10,18 +10,22 @@ import CustomButton from '@/components/CustomButton';
 import { FontAwesome } from '@expo/vector-icons';
 import { searchPosts } from '@/lib/appwrite';
 import useAppwrite from '@/lib/useAppwrite';
-import { useGlobalContext } from '@/context/GlobalProvider';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const Result = () => {
-  const { user, isLoggedIn, isLoading, setPostData } = useGlobalContext();
+  const user = useAuthStore((state) => state.user);
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+
   const { query } = useLocalSearchParams();
+
   const {
     data: posts,
     loading,
     refetch,
-  } = useAppwrite(() => searchPosts(query as string));
+  } = useAppwrite({
+    fetchFn: () => searchPosts(query as string),
+  });
 
-  if (isLoading) return;
   if (!isLoggedIn || !user) return router.push('/sign-in');
   return (
     <BackgroundLayout>
@@ -33,12 +37,7 @@ const Result = () => {
           data={loading ? [] : (posts as Post[])}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <PostCard
-              post={item}
-              userId={user.id}
-              refetch={refetch}
-              setPostData={setPostData}
-            />
+            <PostCard post={item} userId={user.id} refetch={refetch} />
           )}
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={() => (

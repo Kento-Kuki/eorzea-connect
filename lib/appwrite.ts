@@ -495,7 +495,7 @@ export const removeBookmark = async (postId: string, userId: string) => {
   }
 };
 
-export const getUserBookmarks = async (userId: string) => {
+export const getUserBookmarks = async (userId: string): Promise<string[]> => {
   try {
     const response = await databases.listDocuments(
       config.databaseId,

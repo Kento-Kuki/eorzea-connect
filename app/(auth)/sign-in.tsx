@@ -7,7 +7,7 @@ import CustomButton from '@/components/CustomButton';
 import { Link, router } from 'expo-router';
 import { getCurrentUser, signIn } from '@/lib/appwrite';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { useGlobalContext } from '@/context/GlobalProvider';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const SignIn = () => {
   const [form, setForm] = useState({
@@ -17,7 +17,8 @@ const SignIn = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { setUser, setIsLoggedIn } = useGlobalContext();
+  const setUser = useAuthStore((state) => state.setUser);
+  const setIsLoggedIn = useAuthStore((state) => state.setIsLoggedIn);
 
   const onSubmit = async () => {
     if (form.email === '' || form.password === '') {

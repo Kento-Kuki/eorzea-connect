@@ -1,15 +1,23 @@
 import { Alert } from 'react-native';
 import { useEffect, useState } from 'react';
 
-const useAppwrite = (fn: () => Promise<any>) => {
-  const [data, setData] = useState<any>(null);
+type FetchFn<T> = () => Promise<T>;
+
+interface UseAppwriteOptions<T> {
+  fetchFn: FetchFn<T>;
+  setFn?: (data: T) => void;
+}
+
+const useAppwrite = <T>({ fetchFn, setFn }: UseAppwriteOptions<T>) => {
+  const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const res = await fn();
+      const res = await fetchFn();
       setData(res);
+      if (setFn) setFn(res);
     } catch (error) {
       Alert.alert('Error', error as string);
     } finally {
@@ -23,7 +31,7 @@ const useAppwrite = (fn: () => Promise<any>) => {
 
   const refetch = () => fetchData();
 
-  return { data, loading, refetch, setData };
+  return { data, loading, refetch };
 };
 
 export default useAppwrite;

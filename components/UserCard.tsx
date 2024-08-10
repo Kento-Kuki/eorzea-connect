@@ -1,18 +1,19 @@
 import { View, Text, Image } from 'react-native';
 import React, { useState } from 'react';
 import { User } from '@/types/User';
-import { useGlobalContext } from '@/context/GlobalProvider';
+
 import CustomButton from './CustomButton';
 import { FontAwesome } from '@expo/vector-icons';
 import { Dialog, Divider, Menu, Portal } from 'react-native-paper';
 import { Href, router } from 'expo-router';
+import { useAuthStore } from '@/store/useAuthStore';
 
 interface UserCardProps {
   user: User;
 }
 
 const UserCard = ({ user }: UserCardProps) => {
-  const { user: currentUser } = useGlobalContext();
+  const currentUser = useAuthStore((state) => state.user);
   const [menuVisible, setMenuVisible] = useState(false);
   const [dialogVisible, setDialogVisible] = useState(false);
 

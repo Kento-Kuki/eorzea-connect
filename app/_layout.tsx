@@ -4,10 +4,12 @@ import { useEffect } from 'react';
 import { GlobalProvider } from '@/context/GlobalProvider';
 import { PaperProvider } from 'react-native-paper';
 import Toast from 'react-native-toast-message';
+import { useAuthStore } from '@/store/useAuthStore';
 
 SplashScreen.preventAutoHideAsync();
 
 const RootLayout = () => {
+  const initializeAuth = useAuthStore((state) => state.initializeAuth);
   const [fontsLoaded, error] = useFonts({
     'Poppins-Black': require('../assets/fonts/Poppins-Black.ttf'),
     'Poppins-Bold': require('../assets/fonts/Poppins-Bold.ttf'),
@@ -24,15 +26,13 @@ const RootLayout = () => {
     if (error) throw error;
 
     if (fontsLoaded) {
-      SplashScreen.hideAsync();
+      initializeAuth().finally(() => {
+        SplashScreen.hideAsync();
+      });
     }
-  }, [fontsLoaded, error]);
+  }, [fontsLoaded, error, initializeAuth]);
 
-  if (!fontsLoaded) {
-    return null;
-  }
-
-  if (!fontsLoaded && !error) {
+  if (!fontsLoaded || error) {
     return null;
   }
 
