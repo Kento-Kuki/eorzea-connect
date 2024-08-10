@@ -10,15 +10,17 @@ import FormField from '@/components/FormField';
 import Select from '@/components/Select';
 import { selectData } from '@/constants/selectData';
 import { IUserForm, SelectType } from '@/types/User';
-import { useGlobalContext } from '@/context/GlobalProvider';
 import { updateUser } from '@/lib/appwrite';
 import { Link, router } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { userSchema } from '@/validation/userSchema';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const EditProfile = () => {
-  const { user, setUser } = useGlobalContext();
+  const user = useAuthStore((state) => state.user);
+
+  const setUser = useAuthStore((state) => state.setUser);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const {

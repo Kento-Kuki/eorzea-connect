@@ -10,30 +10,24 @@ import { Dialog, Menu, Portal } from 'react-native-paper';
 import { addBookmark, deletePost, removeBookmark } from '@/lib/appwrite';
 import { router } from 'expo-router';
 import Toast from 'react-native-toast-message';
+import { usePostStore } from '@/store/usePostState';
 
 interface PostProps {
   post: Post;
   userId: string;
   refetch: () => Promise<void>;
-  setPostData: React.Dispatch<React.SetStateAction<Post | IPostForm | null>>;
-  setBookmarks?: React.Dispatch<React.SetStateAction<string[]>>;
   isBookmarked?: boolean;
 }
 
-const PostCard = ({
-  post,
-  userId,
-  refetch,
-  setPostData,
-  setBookmarks,
-  isBookmarked,
-}: PostProps) => {
+const PostCard = ({ post, userId, refetch, isBookmarked }: PostProps) => {
   const [menuVisible, setMenuVisible] = useState(false);
   const [dialogVisible, setDialogVisible] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isToggling, setIsToggling] = useState(false);
   const [bookmarkStatus, setBookmarkStatus] = useState(isBookmarked);
   const isOwnPost = post.author.id === userId;
+  const setPostData = usePostStore((state) => state.setPostData);
+  const setBookmarks = usePostStore((state) => state.setBookmarks);
 
   const showDialog = () => setDialogVisible(true);
   const hideDialog = () => setDialogVisible(false);
@@ -73,14 +67,13 @@ const PostCard = ({
         });
       }
       setBookmarkStatus(!bookmarkStatus);
-      setBookmarks &&
-        setBookmarks((prev) => {
-          if (prev?.includes(post.id)) {
-            return prev?.filter((id) => id !== post.id);
-          } else {
-            return [...(prev || []), post.id];
-          }
-        });
+      setBookmarks((prevBookmarks) => {
+        if (prevBookmarks?.includes(post.id)) {
+          return prevBookmarks?.filter((id) => id !== post.id);
+        } else {
+          return [...(prevBookmarks || []), post.id];
+        }
+      });
     } catch (error) {
       console.error('Failed to toggle bookmark:', error);
       Toast.show({
@@ -116,7 +109,9 @@ const PostCard = ({
             >
               <Menu.Item
                 onPress={() => {
-                  setPostData(post);
+                  if (setPostData) {
+                    setPostData(post);
+                  }
                   router.push('/create');
                   closeMenu();
                 }}

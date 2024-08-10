@@ -1,7 +1,7 @@
-import { useGlobalContext } from '@/context/GlobalProvider';
+import { useAuthStore } from '@/store/useAuthStore';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Redirect, router, Tabs } from 'expo-router';
-import React, { useEffect } from 'react';
+import { Redirect, Tabs } from 'expo-router';
+
 import { Text, View } from 'react-native';
 
 interface TabIconProps {
@@ -26,12 +26,13 @@ const TabIcon = ({ icon, color, name, focused }: TabIconProps) => {
 };
 
 const TabsLayout = () => {
-  const { isLoading, isLoggedIn, user } = useGlobalContext();
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+  const user = useAuthStore((state) => state.user);
 
   if (user && user.isSetupComplete === false)
     return <Redirect href='/set-up' />;
 
-  if (!isLoading && !isLoggedIn) return <Redirect href='/sign-in' />;
+  if (!isLoggedIn) return <Redirect href='/sign-in' />;
   return (
     <Tabs
       screenOptions={{

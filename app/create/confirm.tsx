@@ -2,16 +2,21 @@ import { View, Text, ScrollView, Alert } from 'react-native';
 import React, { useState } from 'react';
 import BackgroundLayout from '@/components/BackgroundLayout';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useGlobalContext } from '@/context/GlobalProvider';
+
 import { Link, Redirect, router } from 'expo-router';
 import CustomButton from '@/components/CustomButton';
 import { FontAwesome } from '@expo/vector-icons';
 import { createPost, updatePost } from '@/lib/appwrite';
 import PreviewPost from '@/components/PreviewPost';
 import { Post } from '@/types/Post';
+import { useAuthStore } from '@/store/useAuthStore';
+import { usePostStore } from '@/store/usePostState';
 
 const Confirm = () => {
-  const { user, postData, setPostData, isLoggedIn } = useGlobalContext();
+  const user = useAuthStore((state) => state.user);
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+  const postData = usePostStore((state) => state.postData);
+  const setPostData = usePostStore((state) => state.setPostData);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isLoggedIn || !user) return <Redirect href='/sign-in' />;

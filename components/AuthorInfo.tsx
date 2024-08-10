@@ -17,7 +17,9 @@ const AuthorInfo = ({ author }: AuthorInfoProps) => {
         />
         <View className='flex justify-center items-center'>
           <Text className='font-psemibold text-lg'>{author.username}</Text>
-          <Text className='font-pmedium'>Age:{author.age}</Text>
+          <Text className='font-pmedium'>
+            Age:{author.age === 'Prefer not to say' ? '?' : author.age}
+          </Text>
           <Text className='font-pmedium'>
             Gender:
             {author.gender === 'Prefer not to say' ? '?' : author.gender}

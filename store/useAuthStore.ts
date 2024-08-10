@@ -1,3 +1,4 @@
+import { getCurrentUser } from '@/lib/appwrite';
 import { User } from '@/types/User';
 import { create } from 'zustand';
 
@@ -6,8 +7,7 @@ interface AuthState {
   setUser: (user: User | null) => void;
   isLoggedIn: boolean;
   setIsLoggedIn: (isLoggedIn: boolean) => void;
-  isLoading: boolean;
-  setIsLoading: (isLoading: boolean) => void;
+  initializeAuth: () => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -15,6 +15,17 @@ export const useAuthStore = create<AuthState>((set) => ({
   setUser: (user: User | null) => set({ user }),
   isLoggedIn: false,
   setIsLoggedIn: (isLoggedIn: boolean) => set({ isLoggedIn }),
-  isLoading: true,
-  setIsLoading: (isLoading: boolean) => set({ isLoading }),
+  initializeAuth: async () => {
+    try {
+      const res = await getCurrentUser();
+      if (res) {
+        set({ user: res, isLoggedIn: true });
+      } else {
+        set({ user: null, isLoggedIn: false });
+      }
+    } catch (error) {
+      console.error(error);
+      set({ user: null, isLoggedIn: false });
+    }
+  },
 }));
