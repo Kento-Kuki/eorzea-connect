@@ -1,3 +1,4 @@
+import { ChatRoomType, IMessage, Message } from '@/types/Chat';
 import { IPostForm, Post } from '@/types/Post';
 import { ISearch, IUserForm, User } from '@/types/User';
 import {
@@ -17,6 +18,8 @@ export const config = {
   userCollectionId: '66a9133f003ac403877a',
   postsCollectionId: '66a9137d0029c55d307a',
   bookmarksCollectionId: '66b568f6001fd78cc093',
+  chatRoomsCollectionId: '66b6cdbf0024585581f1',
+  messagesCollectionId: '66b6d26a00090ee5da2f',
   storageId: '66a914bd00338fb24fe6',
 };
 
@@ -504,6 +507,296 @@ export const getUserBookmarks = async (userId: string): Promise<string[]> => {
     );
 
     return response.documents.map((bookmark) => bookmark.postId);
+  } catch (error) {
+    console.log(error);
+    throw new Error(error as string);
+  }
+};
+
+export const getChatRooms = async (userId: string) => {
+  try {
+    const response = await databases.listDocuments(
+      config.databaseId,
+      config.chatRoomsCollectionId,
+      [Query.equal('participants', userId)]
+    );
+
+    const chatRoomsWithOpponents: ChatRoomType[] = await Promise.all(
+      response.documents.map(async (chatRoom) => {
+        const opponentId = chatRoom.participants.filter(
+          (participantId: string) => participantId !== userId
+        )[0];
+
+        let opponent: User | null = null;
+        if (opponentId) {
+          opponent = await getUser(opponentId);
+        }
+
+        const lastMessage = chatRoom.messages
+          ? {
+              id: chatRoom.messages.$id,
+              chatRoomId: chatRoom.$id,
+              user: {
+                id: chatRoom.messages.users.$id,
+                accountId: chatRoom.messages.users.accountId,
+                username: chatRoom.messages.users.username,
+                email: chatRoom.messages.users.email,
+                avatar: chatRoom.messages.users.avatar,
+                isSetupComplete: chatRoom.messages.users.isSetupComplete,
+                age: chatRoom.messages.users.age,
+                gender: chatRoom.messages.users.gender,
+                race: chatRoom.messages.users.race,
+                job: chatRoom.messages.users.job,
+                activeTime: chatRoom.messages.users.activeTime,
+                playStyle: chatRoom.messages.users.playStyle,
+                server: chatRoom.messages.users.server,
+                dataCenter: chatRoom.messages.users.dataCenter,
+              } as User,
+              content: chatRoom.messages.content,
+              createdAt: chatRoom.messages.$createdAt,
+              isRead: chatRoom.messages.isRead,
+            }
+          : null;
+
+        return {
+          id: chatRoom.$id,
+          lastMessage,
+          opponent,
+          updatedAt: chatRoom.$updatedAt,
+        };
+      })
+    );
+    const sortedChatRooms = chatRoomsWithOpponents.sort((a, b) => {
+      return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+    });
+
+    return sortedChatRooms;
+  } catch (error) {
+    console.error(error);
+    throw new Error(error as string);
+  }
+};
+
+export const getMessages = async (chatRoomId: string) => {
+  try {
+    const response = await databases.listDocuments(
+      config.databaseId,
+      config.messagesCollectionId,
+      [Query.equal('chatrooms', chatRoomId)]
+    );
+    const formattedMessages: Message[] = response.documents.map((message) => ({
+      id: message.$id,
+      chatRoomId: message.chatrooms.$id,
+      user: {
+        id: message.users.$id,
+        accountId: message.users.accountId,
+        username: message.users.username,
+        email: message.users.email,
+        avatar: message.users.avatar,
+        isSetupComplete: message.users.isSetupComplete,
+        age: message.users.age,
+        gender: message.users.gender,
+        race: message.users.race,
+        job: message.users.job,
+        activeTime: message.users.activeTime,
+        playStyle: message.users.playStyle,
+        server: message.users.server,
+        dataCenter: message.users.dataCenter,
+      } as User,
+      content: message.content,
+      createdAt: message.$createdAt,
+      isRead: message.isRead,
+    }));
+
+    return formattedMessages;
+  } catch (error) {
+    console.log(error);
+    throw new Error(error as string);
+  }
+};
+
+export const createMessage = async (data: IMessage) => {
+  try {
+    const newMessage = await databases.createDocument(
+      config.databaseId,
+      config.messagesCollectionId,
+      ID.unique(),
+      {
+        chatrooms: data.chatRoomId,
+        users: data.userId,
+        content: data.content,
+        isRead: false,
+      }
+    );
+    const formattedMessage: Message = {
+      id: newMessage.$id,
+      chatRoomId: newMessage.chatrooms.$id,
+      user: {
+        id: newMessage.users.$id,
+        accountId: newMessage.users.accountId,
+        username: newMessage.users.username,
+        email: newMessage.users.email,
+        avatar: newMessage.users.avatar,
+        isSetupComplete: newMessage.users.isSetupComplete,
+        age: newMessage.users.age,
+        gender: newMessage.users.gender,
+        race: newMessage.users.race,
+        job: newMessage.users.job,
+        activeTime: newMessage.users.activeTime,
+        playStyle: newMessage.users.playStyle,
+        server: newMessage.users.server,
+        dataCenter: newMessage.users.dataCenter,
+      },
+      content: newMessage.content,
+      createdAt: newMessage.$createdAt,
+      isRead: newMessage.isRead,
+    };
+
+    await databases.updateDocument(
+      config.databaseId,
+      config.chatRoomsCollectionId,
+      data.chatRoomId,
+      {
+        messages: formattedMessage.id,
+      }
+    );
+    return formattedMessage;
+  } catch (error) {
+    console.log(error);
+    throw new Error(error as string);
+  }
+};
+
+export const markMessageAsRead = async (messageId: string) => {
+  try {
+    const updatedMessage = await databases.updateDocument(
+      config.databaseId,
+      config.messagesCollectionId,
+      messageId,
+      {
+        isRead: true,
+      }
+    );
+    const formattedMessage: Message = {
+      id: updatedMessage.$id,
+      chatRoomId: updatedMessage.chatrooms.$id,
+      user: {
+        id: updatedMessage.users.$id,
+        accountId: updatedMessage.users.accountId,
+        username: updatedMessage.users.username,
+        email: updatedMessage.users.email,
+        avatar: updatedMessage.users.avatar,
+        isSetupComplete: updatedMessage.users.isSetupComplete,
+        age: updatedMessage.users.age,
+        gender: updatedMessage.users.gender,
+        race: updatedMessage.users.race,
+        job: updatedMessage.users.job,
+        activeTime: updatedMessage.users.activeTime,
+        playStyle: updatedMessage.users.playStyle,
+        server: updatedMessage.users.server,
+        dataCenter: updatedMessage.users.dataCenter,
+      },
+      content: updatedMessage.content,
+      createdAt: updatedMessage.$createdAt,
+      isRead: updatedMessage.isRead,
+    };
+
+    return formattedMessage;
+  } catch (error) {
+    console.log(error);
+    throw new Error(error as string);
+  }
+};
+
+export const createChatRoom = async (participants: string[]) => {
+  try {
+    // check if chat room already exists
+    const existingChatRooms = await databases.listDocuments(
+      config.databaseId,
+      config.chatRoomsCollectionId,
+      [
+        Query.equal('participants', participants[0]),
+        Query.equal('participants', participants[1]),
+      ]
+    );
+
+    // if chat room exists, return its id
+    const chatRoomExists = existingChatRooms.documents.find((chatRoom) => {
+      const roomParticipants = chatRoom.participants;
+      return (
+        roomParticipants.includes(participants[0]) &&
+        roomParticipants.includes(participants[1])
+      );
+    });
+    if (chatRoomExists) return chatRoomExists.$id;
+
+    // create new chat room
+    const newChatRoom = await databases.createDocument(
+      config.databaseId,
+      config.chatRoomsCollectionId,
+      ID.unique(),
+      { participants, messages: null }
+    );
+    return newChatRoom.$id;
+  } catch (error) {
+    console.log(error);
+    throw new Error(error as string);
+  }
+};
+
+export const getChatRoomById = async (
+  chatRoomId: string,
+  userId: string
+): Promise<ChatRoomType> => {
+  try {
+    const chatRoom = await databases.getDocument(
+      config.databaseId,
+      config.chatRoomsCollectionId,
+      chatRoomId
+    );
+    const opponentId = chatRoom.participants.filter(
+      (participantId: string) => participantId !== userId
+    )[0];
+
+    let opponent: User | null = null;
+    if (opponentId) {
+      opponent = await getUser(opponentId);
+    }
+
+    const lastMessage = chatRoom.messages
+      ? {
+          id: chatRoom.messages.$id,
+          chatRoomId: chatRoom.$id,
+          user: {
+            id: chatRoom.messages.users.$id,
+            accountId: chatRoom.messages.users.accountId,
+            username: chatRoom.messages.users.username,
+            email: chatRoom.messages.users.email,
+            avatar: chatRoom.messages.users.avatar,
+            isSetupComplete: chatRoom.messages.users.isSetupComplete,
+            age: chatRoom.messages.users.age,
+            gender: chatRoom.messages.users.gender,
+            race: chatRoom.messages.users.race,
+            job: chatRoom.messages.users.job,
+            activeTime: chatRoom.messages.users.activeTime,
+            playStyle: chatRoom.messages.users.playStyle,
+            server: chatRoom.messages.users.server,
+            dataCenter: chatRoom.messages.users.dataCenter,
+          } as User,
+          content: chatRoom.messages.content,
+          createdAt: chatRoom.messages.$createdAt,
+          isRead: chatRoom.messages.isRead,
+        }
+      : null;
+
+    const formattedChatRoom: ChatRoomType = {
+      id: chatRoom.$id,
+      lastMessage,
+      opponent,
+      updatedAt: chatRoom.$updatedAt,
+    };
+
+    return formattedChatRoom;
   } catch (error) {
     console.log(error);
     throw new Error(error as string);
