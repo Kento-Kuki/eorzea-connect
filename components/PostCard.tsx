@@ -7,10 +7,16 @@ import Separator from './Separator';
 import CustomButton from './CustomButton';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Dialog, Menu, Portal } from 'react-native-paper';
-import { addBookmark, deletePost, removeBookmark } from '@/lib/appwrite';
+import {
+  addBookmark,
+  createChatRoom,
+  deletePost,
+  removeBookmark,
+} from '@/lib/appwrite';
 import { router } from 'expo-router';
 import Toast from 'react-native-toast-message';
 import { usePostStore } from '@/store/usePostState';
+import { useMessageStore } from '@/store/useMessageStore';
 
 interface PostProps {
   post: Post;
@@ -24,6 +30,7 @@ const PostCard = ({ post, userId, refetch, isBookmarked }: PostProps) => {
   const [dialogVisible, setDialogVisible] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isToggling, setIsToggling] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   const [bookmarkStatus, setBookmarkStatus] = useState(isBookmarked);
   const isOwnPost = post.author.id === userId;
   const setPostData = usePostStore((state) => state.setPostData);
@@ -83,6 +90,23 @@ const PostCard = ({ post, userId, refetch, isBookmarked }: PostProps) => {
       });
     } finally {
       setIsToggling(false);
+    }
+  };
+
+  const onSendMessage = async () => {
+    try {
+      setIsSending(true);
+      const chatRoomId = await createChatRoom([userId, post.author.id]);
+      router.push(`/chat/${chatRoomId}`);
+    } catch (error) {
+      console.error('Failed to create chat room:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Please try again',
+        position: 'top',
+      });
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -174,7 +198,13 @@ const PostCard = ({ post, userId, refetch, isBookmarked }: PostProps) => {
       {/* Button */}
       {!isOwnPost && (
         <View className='flex flex-row justify-between items-center mx-7 my-2'>
-          <CustomButton containerStyles='px-4'>Send message</CustomButton>
+          <CustomButton
+            containerStyles='px-4'
+            onPress={onSendMessage}
+            isLoading={isSending}
+          >
+            Send message
+          </CustomButton>
           <CustomButton
             containerStyles='w-16'
             onPress={toggleBookmark}
