@@ -5,7 +5,7 @@ import {
   ScrollView,
   RefreshControl,
 } from 'react-native';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import BackgroundLayout from '@/components/BackgroundLayout';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ChatItem from '@/components/ChatItem';
