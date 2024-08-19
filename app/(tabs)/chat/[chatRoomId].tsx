@@ -38,6 +38,9 @@ const ChatRoom = () => {
     if (scrollViewRef.current) {
       scrollViewRef.current.scrollToEnd({ animated: true });
     }
+  }, [messages, chatRoomId]);
+
+  useEffect(() => {
     if (user && messages) {
       messages
         .filter((message) => message.user.id !== user.id && !message.isRead)
@@ -113,11 +116,7 @@ const ChatRoom = () => {
             />
           ))}
         </ScrollView>
-        <MessageInput
-          chatRoomId={chatRoomId as string}
-          userId={user.id}
-          setChatRooms={setChatRooms}
-        />
+        <MessageInput chatRoomId={chatRoomId as string} userId={user.id} />
       </SafeAreaView>
     </BackgroundLayout>
   );
