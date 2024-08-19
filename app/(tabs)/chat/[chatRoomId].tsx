@@ -8,6 +8,7 @@ import {
   getChatRoomById,
   getMessages,
   markMessageAsRead,
+  subscribeToMessages,
 } from '@/lib/appwrite';
 import { FontAwesome } from '@expo/vector-icons';
 import { useAuthStore } from '@/store/useAuthStore';
@@ -59,6 +60,12 @@ const ChatRoom = () => {
     }
   }, [messages]);
 
+  useEffect(() => {
+    const unsubscribe = subscribeToMessages(chatRoomId as string, setMessages);
+
+    return () => unsubscribe();
+  }, [chatRoomId]);
+
   if (!user) return <Redirect href='/sign-in' />;
 
   if (loading || chatRoomLoading) {
@@ -109,7 +116,6 @@ const ChatRoom = () => {
         <MessageInput
           chatRoomId={chatRoomId as string}
           userId={user.id}
-          setMessages={setMessages}
           setChatRooms={setChatRooms}
         />
       </SafeAreaView>

@@ -582,11 +582,11 @@ export const getMessages = async (chatRoomId: string) => {
     const response = await databases.listDocuments(
       config.databaseId,
       config.messagesCollectionId,
-      [Query.equal('chatrooms', chatRoomId)]
+      [Query.equal('chatRoomId', chatRoomId)]
     );
     const formattedMessages: Message[] = response.documents.map((message) => ({
       id: message.$id,
-      chatRoomId: message.chatrooms.$id,
+      chatRoomId: message.chatRoomId,
       user: {
         id: message.users.$id,
         accountId: message.users.accountId,
@@ -622,7 +622,7 @@ export const createMessage = async (data: IMessage) => {
       config.messagesCollectionId,
       ID.unique(),
       {
-        chatrooms: data.chatRoomId,
+        chatRoomId: data.chatRoomId,
         users: data.userId,
         content: data.content,
         isRead: false,
@@ -630,7 +630,7 @@ export const createMessage = async (data: IMessage) => {
     );
     const formattedMessage: Message = {
       id: newMessage.$id,
-      chatRoomId: newMessage.chatrooms.$id,
+      chatRoomId: newMessage.chatRoomId,
       user: {
         id: newMessage.users.$id,
         accountId: newMessage.users.accountId,
@@ -679,7 +679,7 @@ export const markMessageAsRead = async (messageId: string) => {
     );
     const formattedMessage: Message = {
       id: updatedMessage.$id,
-      chatRoomId: updatedMessage.chatrooms.$id,
+      chatRoomId: updatedMessage.chatRoomId,
       user: {
         id: updatedMessage.users.$id,
         accountId: updatedMessage.users.accountId,
@@ -801,4 +801,58 @@ export const getChatRoomById = async (
     console.log(error);
     throw new Error(error as string);
   }
+};
+
+export const subscribeToMessages = (
+  chatRoomId: string,
+  setMessages: (updateFn: (messages: Message[]) => Message[]) => void
+) => {
+  const unsubscribe = client.subscribe(
+    `databases.${config.databaseId}.collections.${config.messagesCollectionId}.documents`,
+    async (response) => {
+      const payload = response.payload as {
+        $id: string;
+        chatRoomId: string;
+      };
+      const message = await databases.getDocument(
+        config.databaseId,
+        config.messagesCollectionId,
+        payload.$id
+      );
+      const formattedMessage = {
+        id: message.$id,
+        chatRoomId: message.chatRoomId,
+        user: {
+          id: message.users.$id,
+          accountId: message.users.accountId,
+          username: message.users.username,
+          email: message.users.email,
+          avatar: message.users.avatar,
+          isSetupComplete: message.users.isSetupComplete,
+          age: message.users.age,
+          gender: message.users.gender,
+          race: message.users.race,
+          job: message.users.job,
+          activeTime: message.users.activeTime,
+          playStyle: message.users.playStyle,
+          server: message.users.server,
+          dataCenter: message.users.dataCenter,
+        } as User,
+        content: message.content,
+        createdAt: message.$createdAt,
+        isRead: message.isRead,
+      };
+
+      if (payload.chatRoomId === chatRoomId) {
+        setMessages((messages) => {
+          const exists = messages.some((msg) => msg.id === formattedMessage.id);
+          if (!exists) {
+            return [...messages, formattedMessage];
+          }
+          return messages;
+        });
+      }
+    }
+  );
+  return unsubscribe;
 };

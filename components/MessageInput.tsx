@@ -7,12 +7,12 @@ import {
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { createMessage } from '@/lib/appwrite';
-import { ChatRoomType, Message } from '@/types/Chat';
+import { ChatRoomType } from '@/types/Chat';
+import Toast from 'react-native-toast-message';
 
 interface MessageInputProps {
   chatRoomId: string;
   userId: string;
-  setMessages: (updateFn: (messages: Message[]) => Message[]) => void;
   setChatRooms: (
     updateFn: (chatRooms: ChatRoomType[]) => ChatRoomType[]
   ) => void;
@@ -21,32 +21,31 @@ interface MessageInputProps {
 const MessageInput = ({
   chatRoomId,
   userId,
-  setMessages,
   setChatRooms,
 }: MessageInputProps) => {
   const [value, setValue] = useState('');
+  const [isSending, setIsSending] = useState(false);
 
   const onSubmit = async () => {
-    if (value.trim()) {
-      const newMessage = await createMessage({
-        chatRoomId,
-        userId,
-        content: value,
-        isRead: false,
-      });
-      setMessages((messages) => [...messages, newMessage]);
-      setChatRooms((chatRooms) => {
-        return chatRooms.map((chatRoom) => {
-          if (chatRoom.id === chatRoomId) {
-            return {
-              ...chatRoom,
-              lastMessage: newMessage,
-            };
-          }
-          return chatRoom;
+    try {
+      setIsSending(true);
+      if (value.trim()) {
+        const newMessage = await createMessage({
+          chatRoomId,
+          userId,
+          content: value,
+          isRead: false,
         });
+      }
+    } catch (error) {
+      console.log(error);
+      Toast.show({
+        type: 'error',
+        text1: 'Failed to sending message',
       });
+    } finally {
       setValue('');
+      setIsSending(false);
     }
   };
 
@@ -64,7 +63,11 @@ const MessageInput = ({
         multiline
       />
 
-      <TouchableOpacity onPress={onSubmit} className='ml-2'>
+      <TouchableOpacity
+        onPress={onSubmit}
+        className='ml-2'
+        disabled={isSending}
+      >
         <FontAwesome name='send' size={28} color='#e0e0e0' />
       </TouchableOpacity>
     </KeyboardAvoidingView>
