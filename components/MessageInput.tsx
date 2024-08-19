@@ -7,22 +7,14 @@ import {
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { createMessage } from '@/lib/appwrite';
-import { ChatRoomType } from '@/types/Chat';
 import Toast from 'react-native-toast-message';
 
 interface MessageInputProps {
   chatRoomId: string;
   userId: string;
-  setChatRooms: (
-    updateFn: (chatRooms: ChatRoomType[]) => ChatRoomType[]
-  ) => void;
 }
 
-const MessageInput = ({
-  chatRoomId,
-  userId,
-  setChatRooms,
-}: MessageInputProps) => {
+const MessageInput = ({ chatRoomId, userId }: MessageInputProps) => {
   const [value, setValue] = useState('');
   const [isSending, setIsSending] = useState(false);
 
