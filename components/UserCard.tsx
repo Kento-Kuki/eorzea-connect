@@ -111,19 +111,52 @@ const UserCard = ({ user }: UserCardProps) => {
         <Text className='font-psemibold text-2xl'>{user.username}</Text>
       </View>
       <View className='flex w-full'>
-        <Text className='font-pmedium text-base'>Age:{user.age}</Text>
-        <Text className='font-pmedium text-base'>
-          Gender:
-          {user.gender === 'Prefer not to say' ? '?' : user.gender}
-        </Text>
-        <Text className='font-pmedium text-base'>Server:{user.server}</Text>
-        <Text className='font-pmedium text-base'>
-          Active Time:{user.activeTime?.join(', ')}
-        </Text>
-        <Text className='font-pmedium text-base'>Race:{user.race}</Text>
-        <Text className='font-pmedium text-base'>Job:{user.job}</Text>
-        <View>
-          <Text className='font-pmedium text-base'>Play Style:</Text>
+        <View className='flex flex-row justify-between'>
+          <Text className='flex-1 font-pmedium text-lg text-center'>Age:</Text>
+          <Text className='flex-1 font-pmedium text-lg text-center'>
+            {user.age}
+          </Text>
+        </View>
+        <View className='flex flex-row justify-between'>
+          <Text className='flex-1 font-pmedium text-lg text-center'>
+            Gender:
+          </Text>
+          <Text className='flex-1 font-pmedium text-lg text-center'>
+            {user.gender === 'Prefer not to say' ? '?' : user.gender}
+          </Text>
+        </View>
+        <View className='flex flex-row justify-between'>
+          <Text className='flex-1 font-pmedium text-lg text-center'>
+            Server:
+          </Text>
+          <Text className='flex-1 font-pmedium text-lg text-center'>
+            {user.server}
+          </Text>
+        </View>
+        <View className='flex flex-row justify-between items-center'>
+          <Text className='flex-1 font-pmedium text-lg text-center'>
+            Active Time:
+          </Text>
+          <Text className='flex-1 font-pmedium text-lg text-center'>
+            {user.activeTime?.join(', ')}
+          </Text>
+        </View>
+        <View className='flex flex-row justify-between'>
+          <Text className='flex-1 font-pmedium text-lg text-center'>Race:</Text>
+          <Text className='flex-1 font-pmedium text-lg text-center'>
+            {user.race}
+          </Text>
+        </View>
+        <View className='flex flex-row justify-between'>
+          <Text className='flex-1 font-pmedium text-lg text-center'>Job:</Text>
+          <Text className='flex-1 font-pmedium text-lg text-center'>
+            {user.job}
+          </Text>
+        </View>
+        <View className='flex flex-row items-center justify-between'>
+          <Text className='flex-1 font-pmedium text-lg text-center'>
+            Play Style:
+          </Text>
           <View className='flex flex-row flex-wrap'>
             {user.playStyle?.map((item, index) => (
               <View

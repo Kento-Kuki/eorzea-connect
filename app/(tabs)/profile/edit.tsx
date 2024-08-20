@@ -1,5 +1,12 @@
 import { useForm, Controller } from 'react-hook-form';
-import { View, Text, Image, ScrollView, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  Alert,
+  TouchableOpacity,
+} from 'react-native';
 import React, { useEffect, useState } from 'react';
 import BackgroundLayout from '@/components/BackgroundLayout';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -16,6 +23,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { userSchema } from '@/validation/userSchema';
 import { useAuthStore } from '@/store/useAuthStore';
+import * as ImagePicker from 'expo-image-picker';
 
 const EditProfile = () => {
   const user = useAuthStore((state) => state.user);
@@ -23,6 +31,7 @@ const EditProfile = () => {
   const setUser = useAuthStore((state) => state.setUser);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [avatarUri, setAvatarUri] = useState(user?.avatar || '');
   const {
     control,
     handleSubmit,
@@ -34,7 +43,7 @@ const EditProfile = () => {
     resolver: zodResolver(userSchema),
     defaultValues: {
       username: user?.username || '',
-      avatar: user?.avatar || '',
+      avatar: avatarUri,
       age: user?.age || '',
       gender: user?.gender || '',
       race: user?.race || '',
@@ -62,13 +71,37 @@ const EditProfile = () => {
     }
   }, [selectedDc]);
 
+  const openPicker = async () => {
+    // request permissions
+    const permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (permissionResult.granted === false) {
+      Alert.alert('Permission not granted!');
+      return;
+    }
+
+    // pick an image
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const uri = result.assets[0].uri;
+      setAvatarUri(uri);
+      setValue('avatar', uri);
+    }
+  };
+
   const onSubmit = async (data: IUserForm) => {
     try {
       setIsSubmitting(true);
       if (!user) return;
       const updatedData = { ...data, isSetupComplete: true };
-      await updateUser(user.id, updatedData);
-      setUser({ ...user, ...updatedData });
+      const updatedUser = await updateUser(user.id, updatedData);
+      setUser(updatedUser);
       Alert.alert('Success', 'Account setup complete!');
       router.replace('/profile');
     } catch (error) {
@@ -92,11 +125,19 @@ const EditProfile = () => {
             <Text className='font-pbold text-3xl text-center'>
               User Details
             </Text>
-            <Image
-              source={{ uri: getValues('avatar') }}
-              className='w-28 h-28 rounded-full'
-              resizeMode='cover'
-            />
+            <View className='relative'>
+              <Image
+                source={{ uri: avatarUri }}
+                className='w-28 h-28 rounded-full'
+                resizeMode='cover'
+              />
+              <TouchableOpacity
+                className='absolute bottom-0 right-0 bg-black rounded-full p-2'
+                onPress={openPicker}
+              >
+                <FontAwesome name='camera' size={18} color='white' />
+              </TouchableOpacity>
+            </View>
             <View className='w-full'>
               <Controller
                 control={control}

@@ -8,6 +8,7 @@ import {
   Databases,
   ID,
   Query,
+  Storage,
 } from 'react-native-appwrite';
 
 export const config = {
@@ -34,6 +35,7 @@ client
 const account = new Account(client);
 const avatars = new Avatars(client);
 const databases = new Databases(client);
+const storage = new Storage(client);
 
 export const createUser = async (
   email: string,
@@ -166,15 +168,62 @@ export const updateUser = async (
   userData: Partial<IUserForm>
 ) => {
   try {
+    const avatarUrl = userData.avatar?.startsWith('file://')
+      ? await uploadFile(userData.avatar)
+      : userData.avatar;
+
     const updatedUser = await databases.updateDocument(
       config.databaseId,
       config.userCollectionId,
       userId,
-      userData
+      { ...userData, avatar: avatarUrl }
     );
-    return updatedUser;
+    return {
+      id: updatedUser.$id,
+      accountId: updatedUser.accountId,
+      username: updatedUser.username,
+      email: updatedUser.email,
+      avatar: updatedUser.avatar,
+      isSetupComplete: updatedUser.isSetupComplete,
+      age: updatedUser.age,
+      gender: updatedUser.gender,
+      race: updatedUser.race,
+      job: updatedUser.job,
+      activeTime: updatedUser.activeTime,
+      playStyle: updatedUser.playStyle,
+      server: updatedUser.server,
+      dataCenter: updatedUser.dataCenter,
+    } as User;
   } catch (error) {
     console.error(error);
+    throw new Error(error as string);
+  }
+};
+
+export const uploadFile = async (uri: string) => {
+  if (!uri) return;
+  try {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    console.log(blob);
+    const file = {
+      name: uri.substring(uri.lastIndexOf('/') + 1),
+      type: blob.type,
+      size: blob.size,
+      uri,
+    };
+
+    const uploadedFile = await storage.createFile(
+      config.storageId,
+      ID.unique(),
+      file
+    );
+
+    const fileUrl = storage.getFileView(config.storageId, uploadedFile.$id);
+
+    return fileUrl;
+  } catch (error) {
+    console.log(error);
     throw new Error(error as string);
   }
 };
