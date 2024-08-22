@@ -2,6 +2,10 @@
 
 Eorzea Connect is a friend-matching app specifically designed for Final Fantasy XIV (FF14). It allows players to easily connect with each other and find companions to enjoy the game together. Developed using React Native (Expo), it offers a seamless experience on mobile devices.
 
+## Design
+
+**Figma**:https://www.figma.com/design/37oMyyHcH73uueoNToF5HT/Eorzea-Connect?node-id=0-1&t=GZud2vJ1mpYdmkJt-0
+
 ## Features
 
 - **Profile Creation**: Users can create profiles based on their FF14 character information and match with other players.
@@ -14,7 +18,7 @@ Eorzea Connect is a friend-matching app specifically designed for Final Fantasy 
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/Kento-Kuki/eorzea-connect
+   git clone https://github.com/Kento-Kuki/eorzea-connect.git
 
    ```
 
@@ -46,4 +50,5 @@ Note: Distribution on app stores is planned and will be announced later.
 
 ## Portfolio
 
-kento-portfolio-p3r9qcq19-kento-kukis-projects.vercel.app
+[kento-portfolio.vercel.app
+](https://kento-portfolio.vercel.app/)
