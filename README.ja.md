@@ -14,7 +14,7 @@ Eorzea Connect は、Final Fantasy XIV（FF14）専用のフレンドマッチ�
 1. プロジェクトをクローンします:
 
    ```bash
-   git clone https://github.com/yourusername/eorzea-connect.git
+   git clone https://github.com/Kento-Kuki/eorzea-connect
 
    ```
 

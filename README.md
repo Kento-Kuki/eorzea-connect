@@ -14,7 +14,7 @@ Eorzea Connect is a friend-matching app specifically designed for Final Fantasy 
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/yourusername/eorzea-connect.git
+   git clone https://github.com/Kento-Kuki/eorzea-connect
 
    ```
 
