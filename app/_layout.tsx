@@ -1,11 +1,14 @@
-import { SplashScreen, Stack, Tabs } from 'expo-router';
+import { SplashScreen, Stack } from 'expo-router';
 import { useFonts } from 'expo-font';
 import { useEffect } from 'react';
-import { GlobalProvider } from '@/context/GlobalProvider';
+import { PaperProvider } from 'react-native-paper';
+import Toast from 'react-native-toast-message';
+import { useAuthStore } from '@/store/useAuthStore';
 
 SplashScreen.preventAutoHideAsync();
 
 const RootLayout = () => {
+  const initializeAuth = useAuthStore((state) => state.initializeAuth);
   const [fontsLoaded, error] = useFonts({
     'Poppins-Black': require('../assets/fonts/Poppins-Black.ttf'),
     'Poppins-Bold': require('../assets/fonts/Poppins-Bold.ttf'),
@@ -22,26 +25,26 @@ const RootLayout = () => {
     if (error) throw error;
 
     if (fontsLoaded) {
-      SplashScreen.hideAsync();
+      initializeAuth().finally(() => {
+        SplashScreen.hideAsync();
+      });
     }
-  }, [fontsLoaded, error]);
+  }, [fontsLoaded, error, initializeAuth]);
 
-  if (!fontsLoaded) {
-    return null;
-  }
-
-  if (!fontsLoaded && !error) {
+  if (!fontsLoaded || error) {
     return null;
   }
 
   return (
-    <GlobalProvider>
+    <PaperProvider>
       <Stack>
         <Stack.Screen name='index' options={{ headerShown: false }} />
         <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
         <Stack.Screen name='(auth)' options={{ headerShown: false }} />
+        <Stack.Screen name='create' options={{ headerShown: false }} />
       </Stack>
-    </GlobalProvider>
+      <Toast />
+    </PaperProvider>
   );
 };
 

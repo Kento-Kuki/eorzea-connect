@@ -1,7 +1,8 @@
+import { useAuthStore } from '@/store/useAuthStore';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Tabs } from 'expo-router';
-import React from 'react';
-import { Image, Text, View } from 'react-native';
+import { Redirect, Tabs } from 'expo-router';
+
+import { Text, View } from 'react-native';
 
 interface TabIconProps {
   icon: JSX.Element;
@@ -25,6 +26,13 @@ const TabIcon = ({ icon, color, name, focused }: TabIconProps) => {
 };
 
 const TabsLayout = () => {
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+  const user = useAuthStore((state) => state.user);
+
+  if (user && user.isSetupComplete === false)
+    return <Redirect href='/set-up' />;
+
+  if (!isLoggedIn) return <Redirect href='/sign-in' />;
   return (
     <Tabs
       screenOptions={{
@@ -91,7 +99,7 @@ const TabsLayout = () => {
           headerShown: false,
           tabBarIcon: ({ color, focused }) => (
             <TabIcon
-              icon={<FontAwesome name='bookmark-o' size={22} color={color} />}
+              icon={<FontAwesome name='bookmark' size={22} color={color} />}
               color={color}
               name='Bookmark'
               focused={focused}

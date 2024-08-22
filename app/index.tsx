@@ -6,16 +6,20 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import CustomButton from '@/components/CustomButton';
 import BackgroundLayout from '@/components/BackgroundLayout';
-import { useGlobalContext } from '@/context/GlobalProvider';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const Welcome = () => {
-  const { isLoading, isLoggedIn } = useGlobalContext();
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
 
-  if (!isLoading && isLoggedIn) return <Redirect href='/home' />;
+  if (isLoggedIn) return <Redirect href='/home' />;
 
   return (
     <BackgroundLayout>
-      <SafeAreaView className='h-full' style={{ flex: 1 }}>
+      <SafeAreaView
+        className='h-full'
+        style={{ flex: 1 }}
+        edges={['top', 'left', 'right']}
+      >
         <ScrollView
           contentContainerStyle={{
             height: '100%',
