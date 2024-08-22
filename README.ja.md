@@ -9,12 +9,17 @@ Eorzea Connect は、Final Fantasy XIV（FF14）専用のフレンドマッチ�
 - **チャット機能**: 気になるユーザーとチャットで直接コミュニケーションが取れます。
 - **ブックマーク**: 気に入った投稿をブックマークして、後から簡単にアクセスできます。
 
+## デザイン
+
+**Figma**:https://www.figma.com/design/37oMyyHcH73uueoNToF5HT/Eorzea-Connect?node-id=0-1&t=GZud2vJ1mpYdmkJt-0
+
+
 ## インストールと設定
 
 1. プロジェクトをクローンします:
 
    ```bash
-   git clone https://github.com/yourusername/eorzea-connect.git
+   git clone https://github.com/Kento-Kuki/eorzea-connect.git
 
    ```
 
@@ -44,6 +49,7 @@ Eorzea Connect は、Final Fantasy XIV（FF14）専用のフレンドマッチ�
 - **Zustand**: シンプルな状態管理アプリ。
 - **Appwrite**: 認証、データベース、ファイルストレージのためのバックエンドサービス。
 
-## ポートフォリオサイト
+## ポートフォリオ
 
-kento-portfolio-p3r9qcq19-kento-kukis-projects.vercel.app
+[kento-portfolio.vercel.app
+](https://kento-portfolio.vercel.app/)
