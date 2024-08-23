@@ -22,9 +22,10 @@ To test the app, you can use one of the following methods:
    ![QR Code](https://github.com/user-attachments/assets/fbda7416-4263-4651-9e74-2f0d7ff0bdb3)
 
 2. **Use the URL**:
-
-   [Expo Dev URL](https://expo.dev/preview/update?message=replace%20environment%20variables&updateRuntimeVersion=1.0.0&createdAt=2024-08-23T00%3A23%3A39.403Z&slug=exp&projectId=3d383f41-71b9-4af8-b6ec-f87cc0adaadb&group=7af7802b-7145-4d90-a5a3-947ed2fedef2)
-
+   ```
+   https://expo.dev/preview/update?message=replace%20environment%20variables&updateRuntimeVersion=1.0.0&createdAt=2024-08-23T00%3A23%3A39.403Z&slug=exp&projectId=3d383f41-71b9-4af8-b6ec-f87cc0adaadb&group=7af7802b-7145-4d90-a5a3-947ed2fedef2
+   ```
+   
 3. **Clone the repository**:
    
    ```bash
