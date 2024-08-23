@@ -33,14 +33,14 @@ To test the app, you can use one of the following methods:
 
    ```
 
- Install the required packages:
+  Install the required packages:
 
    ```bash
    cd eorzea-connect
    npm install
 
    ```
- Start the Expo development server:
+  Start the Expo development server:
 
    ```bash
    npm start
