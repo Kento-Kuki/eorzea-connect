@@ -26,9 +26,8 @@ If you use QR code or URL, Expo Go(app) is required.
 
 2. **Use the URL**:
    ```
-https://expo.dev/preview/update?message=Merge%20branch%20'main'%20of%20https%3A%2F%2Fgithub.com%2FKento-Kuki%2Feorzea-connect&updateRuntimeVersion=1.0.0&createdAt=2024-08-23T01%3A01%3A56.102Z&slug=exp&projectId=3d383f41-71b9-4af8-b6ec-f87cc0adaadb&group=10e7ad80-91ea-4ada-875b-7baf08f1055f
+   https://expo.dev/preview/update?message=Merge%20branch%20'main'%20of%20https%3A%2F%2Fgithub.com%2FKento-Kuki%2Feorzea-connect&updateRuntimeVersion=1.0.0&createdAt=2024-08-23T01%3A01%3A56.102Z&slug=exp&projectId=3d383f41-71b9-4af8-b6ec-f87cc0adaadb&group=10e7ad80-91ea-4ada-875b-7baf08f1055f
    ```
-   
 3. **Clone the repository**:
    
    ```bash
