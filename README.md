@@ -16,6 +16,7 @@ Eorzea Connect is a friend-matching app specifically designed for Final Fantasy 
 ## Installation and Setup
 
 To test the app, you can use one of the following methods:
+If you use QR code or URL, Expo Go(app) is required.
 
 1. **Scan the following QR code**:
 
