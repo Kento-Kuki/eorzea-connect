@@ -12,16 +12,19 @@ import {
 } from 'react-native-appwrite';
 
 export const config = {
-  endpoint: 'https://cloud.appwrite.io/v1',
-  platform: 'com.kento.eorzeaconnect',
-  projectId: '66a91139003b3dd3bcee',
-  databaseId: '66a91312000bb4d4ce75',
-  userCollectionId: '66a9133f003ac403877a',
-  postsCollectionId: '66a9137d0029c55d307a',
-  bookmarksCollectionId: '66b568f6001fd78cc093',
-  chatRoomsCollectionId: '66b6cdbf0024585581f1',
-  messagesCollectionId: '66b6d26a00090ee5da2f',
-  storageId: '66a914bd00338fb24fe6',
+  endpoint: process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT!,
+  platform: process.env.EXPO_PUBLIC_APPWRITE_PLATFORM!,
+  projectId: process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID!,
+  databaseId: process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!,
+  userCollectionId: process.env.EXPO_PUBLIC_APPWRITE_USER_COLLECTION_ID!,
+  postsCollectionId: process.env.EXPO_PUBLIC_APPWRITE_POSTS_COLLECTION_ID!,
+  bookmarksCollectionId: process.env
+    .EXPO_PUBLIC_APPWRITE_BOOKMARKS_COLLECTION_ID!,
+  chatRoomsCollectionId: process.env
+    .EXPO_PUBLIC_APPWRITE_CHAT_ROOMS_COLLECTION_ID!,
+  messagesCollectionId: process.env
+    .EXPO_PUBLIC_APPWRITE_MESSAGES_COLLECTION_ID!,
+  storageId: process.env.EXPO_PUBLIC_APPWRITE_STORAGE_ID!,
 };
 
 // Init your React Native SDK
