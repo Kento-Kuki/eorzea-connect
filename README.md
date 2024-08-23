@@ -39,14 +39,13 @@ To test the app, you can use one of the following methods:
    npm install
 
    ```
-  Start the Expo development server:
+     Start the Expo development server:
 
    ```bash
    npm start
 
    ```
-
- Test the app on an emulator or a real device.
+    Test the app on an emulator or a real device.
 
 Note: Distribution on app stores is planned and will be announced later.
 
