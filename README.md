@@ -15,29 +15,39 @@ Eorzea Connect is a friend-matching app specifically designed for Final Fantasy 
 
 ## Installation and Setup
 
-1. Clone the repository:
+To test the app, you can use one of the following methods:
 
+If you use QR code or URL, Expo Go(app) is required.
+
+1. **Scan the following QR code**:
+
+   ![QR Code](https://github.com/user-attachments/assets/fbda7416-4263-4651-9e74-2f0d7ff0bdb3)
+
+2. **Use the URL**:
+   ```
+   https://expo.dev/preview/update?message=replace%20environment%20variables&updateRuntimeVersion=1.0.0&createdAt=2024-08-23T00%3A23%3A39.403Z&slug=exp&projectId=3d383f41-71b9-4af8-b6ec-f87cc0adaadb&group=7af7802b-7145-4d90-a5a3-947ed2fedef2
+   ```
+   
+3. **Clone the repository**:
+   
    ```bash
    git clone https://github.com/Kento-Kuki/eorzea-connect.git
 
    ```
-
-2. Install the required packages:
+     Install the required packages:
 
    ```bash
    cd eorzea-connect
    npm install
 
    ```
-
-3. Start the Expo development server:
+     Start the Expo development server:
 
    ```bash
    npm start
 
    ```
-
-4. Test the app on an emulator or a real device.
+    Test the app on an emulator or a real device.
 
 Note: Distribution on app stores is planned and will be announced later.
 
