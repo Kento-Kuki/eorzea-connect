@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Image } from 'react-native';
+import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
 import React from 'react';
 import BackgroundLayout from '@/components/BackgroundLayout';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -13,6 +13,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { postSchema } from '@/validation/postSchema';
 import { useAuthStore } from '@/store/useAuthStore';
 import { usePostStore } from '@/store/usePostState';
+import { FontAwesome } from '@expo/vector-icons';
 
 const Create = () => {
   const user = useAuthStore((state) => state.user);
@@ -44,6 +45,9 @@ const Create = () => {
     <BackgroundLayout>
       <SafeAreaView className='h-full mx-4 mb-6 mt-3 flex-1'>
         <View className='flex flex-row justify-between items-center mb-2'>
+          <TouchableOpacity onPress={() => router.back()} className='w-8'>
+            <FontAwesome name='angle-left' size={36} color='white' />
+          </TouchableOpacity>
           <Text className='text-2xl text-white font-psemibold'>
             Create New Post
           </Text>
