@@ -32,8 +32,7 @@ To test the app, you can use one of the following methods:
    git clone https://github.com/Kento-Kuki/eorzea-connect.git
 
    ```
-
-  Install the required packages:
+     Install the required packages:
 
    ```bash
    cd eorzea-connect
