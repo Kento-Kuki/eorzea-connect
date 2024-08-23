@@ -14,7 +14,7 @@ Eorzea Connect は、Final Fantasy XIV（FF14）専用のフレンドマッチ�
 **Figma**:https://www.figma.com/design/37oMyyHcH73uueoNToF5HT/Eorzea-Connect?node-id=0-1&t=GZud2vJ1mpYdmkJt-0
 
 ## インストールと設定
-以下の方法があります。
+以下の方法があります。QRコードとURLのどちらかを使う場合は、Expo GO(アプリ)が必須です。
 
 1. **QRコード**:
 
@@ -29,23 +29,20 @@ Eorzea Connect は、Final Fantasy XIV（FF14）専用のフレンドマッチ�
    git clone https://github.com/Kento-Kuki/eorzea-connect.git
 
    ```
-
-必要なパッケージをインストールします：
+   必要なパッケージをインストールします：
 
    ```bash
    cd eorzea-connect
    npm install
 
    ```
-
-Expo 開発環境を立ち上げます:
+   Expo 開発環境を立ち上げます:
 
    ```bash
    npm start
 
    ```
-
-エミュレーターまたは実機でアプリを確認します。
+   エミュレーターまたは実機でアプリを確認します。
 
 ※各ストアに配信予定
 
