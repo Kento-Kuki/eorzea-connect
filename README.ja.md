@@ -23,11 +23,12 @@ Eorzea Connect は、Final Fantasy XIV（FF14）専用のフレンドマッチ�
 
 1. **QR コード**:
 
-   ![QR Code](https://github.com/user-attachments/assets/fbda7416-4263-4651-9e74-2f0d7ff0bdb3)
+   ![image](https://github.com/user-attachments/assets/d6e363ea-6ec4-41e6-b1c8-ada364900d54)
+
 
 2. **URL**:
    ```
-   https://expo.dev/preview/update?message=replace%20environment%20variables&updateRuntimeVersion=1.0.0&createdAt=2024-08-23T00%3A23%3A39.403Z&slug=exp&projectId=3d383f41-71b9-4af8-b6ec-f87cc0adaadb&group=7af7802b-7145-4d90-a5a3-947ed2fedef2
+   https://expo.dev/preview/update?message=Merge%20branch%20'main'%20of%20https%3A%2F%2Fgithub.com%2FKento-Kuki%2Feorzea-connect&updateRuntimeVersion=1.0.0&createdAt=2024-08-23T01%3A01%3A56.102Z&slug=exp&projectId=3d383f41-71b9-4af8-b6ec-f87cc0adaadb&group=10e7ad80-91ea-4ada-875b-7baf08f1055f
    ```
 3. **クローン**:
 
